@@ -1,16 +1,18 @@
-function MyRect(x, y, w, h){ //we need to add options to this
-    this.body = Bodies.rectangle(x, y, w, h);
+function MyRect(x, y, w, h, options){ //we need to add options to this
+    this.body = Bodies.rectangle(x, y, w, h, options);
 
     this.w = w;
     this.h = h;
 
-    World.add(engine.world, [boxA]);
+    World.add(engine.world, [this.body]); //
 
     this.show = function(){
         var pos = this.body.position;
         var angle = this.body.angle;
         push();
         translate(pos.x, pos.y);
+        rotate(angle);
+        rectMode(CENTER);
         rect(0, 0, this.w, this.h);
         pop();
     }
