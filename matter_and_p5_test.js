@@ -21,20 +21,20 @@ var ground;
 var connectedBoxes = [];
 var boxConst;
 
-
 function setup() {
   createCanvas(400, 400);
   engine = Engine.create();
   world = engine.world;
   Matter.Runner.run(engine);
-  ground = new MyRect(200, 390, 400, 20, { isStatic: true });
-  var tempBox1 = new MyRect(50, 10, 10, 10, null);
-  var tempBox2 = new MyRect(50, 30, 10, 10, null);
+  ground = new MyRect(200, 390, 400, 20, { isStatic: true, collisionFilter: {group: 0, mask: -1} });
+
+  var tempBox1 = new MyRect(200, 200, 20, 20, { isStatic: true, collisionFilter: {group: 0, mask: -1} });
+  var tempBox2 = new MyRect(50, 30, 30, 30, {collisionFilter: {group: 0, mask: -1} });
 
   connectedBoxes.push(tempBox1);
   connectedBoxes.push(tempBox2);
 
-  boxConst = new MyConsraint(tempBox1, tempBox2, 50, 0.4);
+  boxConst = new MyConsraint(tempBox1, tempBox2, 100, 0.4);
 /*
   var constr = Constraint.create({
     bodyA: tempBox1.body,
@@ -54,7 +54,11 @@ function draw() {
 }
 */
 function mouseDragged(){
-  boxes.push(new MyCircle(mouseX, mouseY, 10, null)) //create a new box on click, pass null for no custom options :)
+  boxes.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {group: 1, mask: 1} }))
+}
+
+function mouseClicked(){
+  boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {group: 1, mask: 2} }))
 }
 
 function draw(){
@@ -73,11 +77,19 @@ function draw(){
   for (let i = 0; i< connectedBoxes.length; i++){
     connectedBoxes[i].show() //for each element in list render it
   }
-
-  /*
-  line(connectedBoxes[0].body.position.x, 
-      connectedBoxes[0].body.position.y, 
-      connectedBoxes[1].body.position.x, 
-      connectedBoxes[1].body.position.y);
-      */
 }
+
+/*
+Collision Logic:
+
+collisionFilter.group will colide always if pos, never if neg
+e.g. collisionFilter: {group: -4} will never collide and collisionFilter: {group: 4} will always colide (0 is the default)
+this logic above is true when body A and B share a collisionFilter group and group != 0
+if not masks come into this
+
+https://blog.ourcade.co/posts/2020/phaser-3-matter-physics-collision-filter/
+
+collisionFilter: {catagory: 1, mask: -1, group: 0} are the defaults
+catagory uses bitmasks eww
+
+*/
