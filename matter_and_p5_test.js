@@ -1,6 +1,4 @@
-//const Matter = require("matter-js");
 
-//const { WEBGL } = require("phaser");
 
 // module aliases
 var Engine = Matter.Engine, //this is to cut down on typing
@@ -9,7 +7,16 @@ var Engine = Matter.Engine, //this is to cut down on typing
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
     Constraint = Matter.Constraint,
-    Composite = Matter.Composite; 
+    Composite = Matter.Composite,
+    Composites = Matter.Composites,
+    Mouse = Matter.Mouse,
+    MouseConstraint = Matter.MouseConstraint;
+
+  var defaultCategory = 0x0001,
+      redCategory = 0x0002,
+      greenCategory = 0x0004,
+      blueCategory = 0x0008;
+
 
 // create an engine
 var engine;
@@ -21,8 +28,10 @@ var ground;
 var connectedBoxes = [];
 var boxConst;
 
+var mConstraint;
+
 function setup() {
-  createCanvas(400, 400);
+  var canvas = createCanvas(400, 400);
   engine = Engine.create();
   world = engine.world;
   Matter.Runner.run(engine);
@@ -34,33 +43,34 @@ function setup() {
   connectedBoxes.push(tempBox1);
   connectedBoxes.push(tempBox2);
 
-  boxConst = new MyConsraint(tempBox1, tempBox2, 100, 0.4);
-/*
-  var constr = Constraint.create({
-    bodyA: tempBox1.body,
-    bodyB: tempBox2.body,
-    length: 50,
-    stiffness: 0.4
-  })
-  World.add(engine.world, constr);
-  */
+  var box1 = new MyRect(100, 250, 40, 40, {collisionFilter: {category: redCategory} });
+  console.log(box1);
+  var box2 = new MyRect(150, 250, 30, 30, {collisionFilter: {category: blueCategory} });
+  var box3 = new MyRect(200, 250, 20, 20, {collisionFilter: {category: greenCategory} });
 
-  //boxA = new MyRect(100, 100, 20, 50);
+  var circle1 = new MyCircle(250, 250, 20, {collisionFilter: {mask: defaultCategory | greenCategory | blueCategory} });
+
+  boxes.push(box1);
+  boxes.push(box2);
+  boxes.push(box3);
+  boxes.push(circle1);
+
+  boxConst = new MyConsraint(tempBox1, tempBox2, 100, 0.4);
+
+  var canvasMouse = Mouse.create(canvas.elt);
+  mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
+  World.add(engine.world, mConstraint);
 }
+
 /*
-function draw() {
-  background(220);
-  boxA.show();
-}
-*/
 function mouseDragged(){
   boxes.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {group: 1, mask: 1} }))
 }
 
 function mouseClicked(){
-  boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {group: 1, mask: 2} }))
+  boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {group: 2, mask: 2} }))
 }
-
+*/
 function draw(){
   //translate(20, -20); //messes up mouse pos
 
