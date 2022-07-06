@@ -12,10 +12,10 @@ var Engine = Matter.Engine, //this is to cut down on typing
     Mouse = Matter.Mouse,
     MouseConstraint = Matter.MouseConstraint;
 
-  var defaultCategory = 0x0001,
-      redCategory = 0x0002,
-      greenCategory = 0x0004,
-      blueCategory = 0x0008;
+  var catDefault = 0x0001,
+      cat1 = 0x0002,
+      cat2 = 0x0004,
+      cat3 = 0x0008;
 
 
 // create an engine
@@ -43,12 +43,11 @@ function setup() {
   connectedBoxes.push(tempBox1);
   connectedBoxes.push(tempBox2);
 
-  var box1 = new MyRect(100, 250, 40, 40, {collisionFilter: {category: redCategory} });
-  console.log(box1);
-  var box2 = new MyRect(150, 250, 30, 30, {collisionFilter: {category: blueCategory} });
-  var box3 = new MyRect(200, 250, 20, 20, {collisionFilter: {category: greenCategory} });
+  var box1 = new MyRect(100, 250, 40, 40, {collisionFilter: {category: cat1} });
+  var box2 = new MyRect(150, 250, 30, 30, {collisionFilter: {category: cat2} });
+  var box3 = new MyRect(200, 250, 20, 20, {collisionFilter: {category: cat3} });
 
-  var circle1 = new MyCircle(250, 250, 20, {collisionFilter: {mask: defaultCategory | greenCategory | blueCategory} });
+  var circle1 = new MyCircle(250, 250, 20, {collisionFilter: {mask: catDefault | cat1 | cat2} });
 
   boxes.push(box1);
   boxes.push(box2);
@@ -57,20 +56,22 @@ function setup() {
 
   boxConst = new MyConsraint(tempBox1, tempBox2, 100, 0.4);
 
+  /*
   var canvasMouse = Mouse.create(canvas.elt);
   mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
   World.add(engine.world, mConstraint);
+  */
 }
 
-/*
+
 function mouseDragged(){
-  boxes.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {group: 1, mask: 1} }))
+  boxes.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} }))
 }
 
 function mouseClicked(){
-  boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {group: 2, mask: 2} }))
+  boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
 }
-*/
+
 function draw(){
   //translate(20, -20); //messes up mouse pos
 
@@ -101,5 +102,13 @@ https://blog.ourcade.co/posts/2020/phaser-3-matter-physics-collision-filter/
 
 collisionFilter: {catagory: 1, mask: -1, group: 0} are the defaults
 catagory uses bitmasks eww
+
+ok final usage
+
+
+boxes.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} })) //colides with itself and default, and not with the other block
+
+boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
+
 
 */
