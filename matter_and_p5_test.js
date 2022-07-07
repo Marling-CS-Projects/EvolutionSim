@@ -21,7 +21,7 @@ var Engine = Matter.Engine, //this is to cut down on typing
 // create an engine
 var engine;
 var world;
-var boxes = [];
+var myObjects = [];
 
 var ground;
 
@@ -45,35 +45,35 @@ function setup() {
   connectedBoxes.push(tempBox1);
   connectedBoxes.push(tempBox2);
 
-  var box1 = new MyRect(100, 250, 40, 80, {collisionFilter: {category: cat1} });
-  var box2 = new MyRect(150, 250, 40, 10, {collisionFilter: {category: cat2} });
-  var box3 = new MyRect(200, 250, 20, 20, {collisionFilter: {category: cat3} });
+  var box1 = new MyRect(100, 250, 40, 40, {collisionFilter: {category: cat1} });
+  var box2 = new MyRect(150, 250, 30, 30, {collisionFilter: {category: cat2} });
+  //var box3 = new MyRect(200, 250, 20, 20, {collisionFilter: {category: cat3} });
 
-  var circle1 = new MyCircle(250, 250, 20, {collisionFilter: {mask: catDefault | cat1 | cat2} });
+  var circle1 = new MyCircle(250, 250, 20, {collisionFilter: {mask: catDefault | cat1} });
 
-  boxes.push(box1);
-  boxes.push(box2);
-  boxes.push(box3);
-  boxes.push(circle1);
+  myObjects.push(box1);
+  myObjects.push(box2);
+  //myObjects.push(box3);
+  myObjects.push(circle1);
 
   boxConst = new MyConsraint(tempBox1, tempBox2, 100, 0.4);
 
-  /*
+  
   var canvasMouse = Mouse.create(canvas.elt);
   mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
   World.add(engine.world, mConstraint);
-  */
+  
 }
 
-
+/*
 function mouseDragged(){
-  boxes.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} }))
+  myObjects.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} }))
 }
 
 function mouseClicked(){
-  boxes.push(new MyCircle(mouseX, mouseY, 10, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
+  myObjects.push(new MyCircle(mouseX, mouseY, 10, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
 }
-
+*/
 function draw(){
   //translate(20, -20); //messes up mouse pos
 
@@ -83,8 +83,8 @@ function draw(){
   ground.show();
   boxConst.show();
 
-  for (let i = 0; i< boxes.length; i++){
-    boxes[i].show() //for each element in list render it
+  for (let i = 0; i< myObjects.length; i++){
+    myObjects[i].show() //for each element in list render it
   }
 
   for (let i = 0; i< connectedBoxes.length; i++){
@@ -108,9 +108,9 @@ catagory uses bit field eww
 ok final usage
 
 
-boxes.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} })) //colides with itself and default, and not with the other block
+myObjects.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} })) //colides with itself and default, and not with the other block
 
-boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
+myObjects.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
 
 
 */
