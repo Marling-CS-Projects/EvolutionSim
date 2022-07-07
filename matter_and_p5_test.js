@@ -12,7 +12,7 @@ var Engine = Matter.Engine, //this is to cut down on typing
     Mouse = Matter.Mouse,
     MouseConstraint = Matter.MouseConstraint;
 
-  var catDefault = 1, //needs to be encoded like bits, only powers of 2 like in binary, bit field
+  const catDefault = 1, //needs to be encoded like bits, only powers of 2 like in binary, bit field
       cat1 = 2,
       cat2 = 4,
       cat3 = 8;
@@ -45,8 +45,8 @@ function setup() {
   connectedBoxes.push(tempBox1);
   connectedBoxes.push(tempBox2);
 
-  var box1 = new MyRect(100, 250, 40, 40, {collisionFilter: {category: cat1} });
-  var box2 = new MyRect(150, 250, 30, 30, {collisionFilter: {category: cat2} });
+  var box1 = new MyRect(100, 250, 40, 80, {collisionFilter: {category: cat1} });
+  var box2 = new MyRect(150, 250, 40, 10, {collisionFilter: {category: cat2} });
   var box3 = new MyRect(200, 250, 20, 20, {collisionFilter: {category: cat3} });
 
   var circle1 = new MyCircle(250, 250, 20, {collisionFilter: {mask: catDefault | cat1 | cat2} });
@@ -71,7 +71,7 @@ function mouseDragged(){
 }
 
 function mouseClicked(){
-  boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
+  boxes.push(new MyCircle(mouseX, mouseY, 10, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
 }
 
 function draw(){
