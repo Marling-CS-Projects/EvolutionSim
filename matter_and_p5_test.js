@@ -12,10 +12,10 @@ var Engine = Matter.Engine, //this is to cut down on typing
     Mouse = Matter.Mouse,
     MouseConstraint = Matter.MouseConstraint;
 
-  var catDefault = 0x0001,
-      cat1 = 0x0002,
-      cat2 = 0x0004,
-      cat3 = 0x0008;
+  var catDefault = 1, //needs to be encoded like bits, only powers of 2 like in binary, bit field
+      cat1 = 2,
+      cat2 = 4,
+      cat3 = 8;
 
 
 // create an engine
@@ -31,14 +31,16 @@ var boxConst;
 var mConstraint;
 
 function setup() {
+  console.log(catDefault, cat1, cat2, cat3);
+
   var canvas = createCanvas(400, 400);
   engine = Engine.create();
   world = engine.world;
   Matter.Runner.run(engine);
-  ground = new MyRect(200, 390, 400, 20, { isStatic: true, collisionFilter: {group: 0, mask: -1} });
+  ground = new MyRect(200, 390, 400, 20, { isStatic: true });
 
-  var tempBox1 = new MyRect(200, 200, 20, 20, { isStatic: true, collisionFilter: {group: 0, mask: -1} });
-  var tempBox2 = new MyRect(50, 30, 30, 30, {collisionFilter: {group: 0, mask: -1} });
+  var tempBox1 = new MyRect(200, 200, 20, 20, { isStatic: true });
+  var tempBox2 = new MyRect(50, 30, 30, 30);
 
   connectedBoxes.push(tempBox1);
   connectedBoxes.push(tempBox2);
@@ -101,7 +103,7 @@ if not masks come into this
 https://blog.ourcade.co/posts/2020/phaser-3-matter-physics-collision-filter/
 
 collisionFilter: {catagory: 1, mask: -1, group: 0} are the defaults
-catagory uses bitmasks eww
+catagory uses bit field eww
 
 ok final usage
 
@@ -111,4 +113,13 @@ boxes.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1
 boxes.push(new MyRect(mouseX, mouseY, 20, 20, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
 
 
+*/
+
+/*
+collisionFilter.catagory:
+bit field
+
+{ collisionFilter: {category: redCategory} }
+to mask { collisionFilter: {mask: defaultCategory | greenCategory | blueCategory} }
+also dont misspell catEgory as catAgory as it wont come up as a runtime error
 */
