@@ -13,7 +13,7 @@ var Engine = Matter.Engine, //this is to cut down on typing
     Mouse = Matter.Mouse,
     MouseConstraint = Matter.MouseConstraint;
 
-if (scene1 == true){
+if (scene1 == true){ //put source here? the other scripts may still be running and I dont like that.
     creature_Creator();
 }
 else if (scene2 == true){
