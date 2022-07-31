@@ -19,8 +19,6 @@ function matter_and_p5_test(){
 
 
   // create an engine
-  var engine;
-  var world;
   var myObjects = [];
 
   var ground;
@@ -31,6 +29,9 @@ function matter_and_p5_test(){
   var mConstraint;
 
   this.mySetup = function() {
+    //var engine; dont declare the vars here, causes error?
+    //var world;
+
     console.log(catDefault, cat1, cat2, cat3);
 
     var canvas = createCanvas(400, 400);
@@ -90,6 +91,11 @@ function matter_and_p5_test(){
     for (let i = 0; i< connectedBoxes.length; i++){
       connectedBoxes[i].show() //for each element in list render it
     }
+  }
+
+  this.myMouseClicked = function(){
+    sceneIndex -= 1;
+    console.log(sceneIndex);
   }
 }
 

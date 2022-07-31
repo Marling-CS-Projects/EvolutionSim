@@ -32,4 +32,9 @@ function creature_Creator(){
             sceneObjects[i].show()
         }
     }
+
+    this.myMouseClicked = function(){
+        sceneIndex += 1;
+        console.log(sceneIndex);
+      }
 }
