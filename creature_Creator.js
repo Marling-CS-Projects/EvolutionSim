@@ -34,7 +34,6 @@ function creature_Creator(){
     }
 
     this.myMouseClicked = function(){
-        sceneIndex += 1;
-        console.log(sceneIndex);
+        changeScene(1)
       }
 }

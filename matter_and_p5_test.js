@@ -94,8 +94,7 @@ function matter_and_p5_test(){
   }
 
   this.myMouseClicked = function(){
-    sceneIndex -= 1;
-    console.log(sceneIndex);
+    myObjects.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} }))
   }
 }
 

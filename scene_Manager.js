@@ -60,6 +60,10 @@ function draw(){
 
 function mouseClicked(){
   myMouseClicked(); //preferably, this would be function anyInputPressed(), but this is a start for now, this is also currently only scene switching, will change when buttons are a thing
+}
+
+function changeScene(newSceneIndex){
+  sceneIndex = newSceneIndex;
   if (sceneIndex == 0){
     creature_Creator();
     mySetup();
