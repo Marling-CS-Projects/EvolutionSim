@@ -65,3 +65,12 @@ function MyConsraint(body1, body2, length, stiffness){
              body2.body.position.y);
     }
 }
+
+function mouseInCanvas(x, y, canvasX, canvasY){
+    if(x > canvasX || x < 0 || y > canvasY || y < 0){
+        return false;
+    }
+    else{
+        return true;
+    }     
+}

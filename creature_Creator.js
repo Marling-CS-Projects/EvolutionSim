@@ -2,8 +2,12 @@ function creature_Creator(){
     var sceneObjects = [];
     var ground;
 
+    var myCreature = [];
+
     let nodeButton;
     let muscleButton;
+
+    let switchCaseX;
 
     this.mySetup = function() {
         var canvas = createCanvas(400, 400);
@@ -43,24 +47,42 @@ function creature_Creator(){
 
         muscleButton.center('horizontal');
         
-
-
         ground.show();
 
         for (let i = 0; i< sceneObjects.length; i++){
             sceneObjects[i].show()
         }
+
+        for (let i = 0; i< myCreature.length; i++){
+            myCreature[i].show() //for each element in list render it
+          }
+
+        //console.log (mouseX, mouseY);
     }
 
     function testFunction(){
+        switchCaseX = 0;
         console.log("button pressed");
     }
 
     function testFunction1(){
-        console.log(muscleButton.position().y);
+        switchCaseX = 1;
+        console.log("button pressed 1");
     }
 
     this.myMouseClicked = function(){
-        //changeScene(1)
-      }
+        if(mouseInCanvas(mouseX, mouseY, 400, 400)){
+            switch(switchCaseX) {
+                case 0:
+                    myCreature.push(new MyCircle(mouseX, mouseY, 15, { isStatic: true }));
+                    console.log("case 1");
+                    break;
+                case 1:
+                    console.log("case 2");
+                    break;
+                default:
+                    console.log("default");
+            }
+        }
+    }
 }
