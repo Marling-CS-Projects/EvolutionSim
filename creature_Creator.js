@@ -2,6 +2,9 @@ function creature_Creator(){
     var sceneObjects = [];
     var ground;
 
+    let nodeButton;
+    let muscleButton;
+
     this.mySetup = function() {
         var canvas = createCanvas(400, 400);
         engine = Engine.create();
@@ -21,10 +24,26 @@ function creature_Creator(){
         var canvasMouse = Mouse.create(canvas.elt);
         var mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
         World.add(engine.world, mConstraint);
+
+        nodeButton = createButton('Node');
+        nodeButton.mousePressed(testFunction);
+
+
+        muscleButton = createButton('Muscle');
+        muscleButton.mousePressed(testFunction1);
+
+        muscleButton.center('horizontal');
+        muscleButton.position(muscleButton.position().x, muscleButton.position().y + 30);
     }
 
     this.myDraw = function(){
         background(51);
+
+        nodeButton.center('horizontal');
+
+        muscleButton.center('horizontal');
+        
+
 
         ground.show();
 
@@ -33,7 +52,15 @@ function creature_Creator(){
         }
     }
 
+    function testFunction(){
+        console.log("button pressed");
+    }
+
+    function testFunction1(){
+        console.log(muscleButton.position().y);
+    }
+
     this.myMouseClicked = function(){
-        changeScene(1)
+        //changeScene(1)
       }
 }
