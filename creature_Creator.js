@@ -83,8 +83,14 @@ function creature_Creator(){
     }
 
     function restartButtonDown(){
+        for (let i = 0; i< myCreature.length; i++){
+            //myCreature[i].World.remove(world, this.body);
+            console.log(myCreature);
+            console.log(world);
+            Composite.remove(world, myCreature[i])
+            
+        }
         myCreature = [];
-        //switchCaseX = 2; //doesnt need a click state
         console.log("restart button pressed");
     }  
 
