@@ -6,8 +6,13 @@ function creature_Creator(){
 
     let nodeButton;
     let muscleButton;
+    let restartButton;
 
     let switchCaseX;
+
+    var mConstraint;
+
+    var temp = null;
 
     this.mySetup = function() {
         var canvas = createCanvas(400, 400);
@@ -19,25 +24,30 @@ function creature_Creator(){
 
         var box1 = new MyRect(100, 250, 40, 40);
         var box2 = new MyRect(150, 250, 30, 30);
-        var boxConstr = new MyConsraint(box1, box2, 100, 0.4);
+        var boxConstr = new MyConsraint(box1.body, box2.body, 100, 0.4);
 
         sceneObjects.push(box1);
         sceneObjects.push(box2);
         sceneObjects.push(boxConstr);
         
         var canvasMouse = Mouse.create(canvas.elt);
-        var mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
+        mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
         World.add(engine.world, mConstraint);
 
         nodeButton = createButton('Node');
-        nodeButton.mousePressed(testFunction);
-
+        nodeButton.mousePressed(nodeButtonDown);
 
         muscleButton = createButton('Muscle');
-        muscleButton.mousePressed(testFunction1);
+        muscleButton.mousePressed(muscleButtonDown);
 
         muscleButton.center('horizontal');
         muscleButton.position(muscleButton.position().x, muscleButton.position().y + 30);
+
+        restartButton = createButton("Restart");
+        restartButton.mousePressed(restartButtonDown)
+
+        restartButton.center('horizontal');
+        restartButton.position(restartButton.position().x, restartButton.position().y + 60);
     }
 
     this.myDraw = function(){
@@ -46,6 +56,8 @@ function creature_Creator(){
         nodeButton.center('horizontal');
 
         muscleButton.center('horizontal');
+
+        restartButton.center('horizontal');
         
         ground.show();
 
@@ -60,25 +72,49 @@ function creature_Creator(){
         //console.log (mouseX, mouseY);
     }
 
-    function testFunction(){
+    function nodeButtonDown(){
         switchCaseX = 0;
-        console.log("button pressed");
+        console.log("node button pressed");
     }
 
-    function testFunction1(){
+    function muscleButtonDown(){
         switchCaseX = 1;
-        console.log("button pressed 1");
+        console.log("muscle button pressed");
     }
+
+    function restartButtonDown(){
+        myCreature = [];
+        //switchCaseX = 2; //doesnt need a click state
+        console.log("restart button pressed");
+    }  
 
     this.myMouseClicked = function(){
         if(mouseInCanvas(mouseX, mouseY, 400, 400)){
             switch(switchCaseX) {
                 case 0:
                     myCreature.push(new MyCircle(mouseX, mouseY, 15, { isStatic: true }));
-                    console.log("case 1");
+                    console.log("case 0");
                     break;
                 case 1:
-                    console.log("case 2");
+                    console.log("1");
+                    if(mConstraint.body != null){
+                        if (temp == null){
+                            temp = mConstraint.body;
+                            console.log(temp);
+                            console.log("2");
+                        }
+                        else{
+                            console.log("3");
+                            
+                            console.log(temp.position.x, temp.position.y);
+                            console.log(mConstraint.body.position.x, mConstraint.body.position.y);
+                            var distance = getDistance(temp.position.x, temp.position.y, mConstraint.body.position.x, mConstraint.body.position.y);
+                            myCreature.push(new MyConsraint(temp, mConstraint.body, distance, 0.4, 10));
+                
+                            temp = null;
+                        }
+                    }
+                    console.log("case 1");
                     break;
                 default:
                     console.log("default");

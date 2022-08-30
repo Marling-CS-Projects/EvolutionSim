@@ -47,11 +47,11 @@ function MyCircle(x, y, r, options){
     }
 }
 
-function MyConsraint(body1, body2, length, stiffness){
+function MyConsraint(body1, body2, length, stiffness, thickness = 1){ //have to pass box.body into this now
 
     var constr = Constraint.create({
-        bodyA: body1.body,
-        bodyB: body2.body,
+        bodyA: body1,
+        bodyB: body2,
         length: length,
         stiffness: stiffness
     })
@@ -59,10 +59,12 @@ function MyConsraint(body1, body2, length, stiffness){
     World.add(engine.world, constr);
 
     this.show = function(){
-        line(body1.body.position.x, 
-             body1.body.position.y, 
-             body2.body.position.x, 
-             body2.body.position.y);
+        strokeWeight(thickness);
+        line(body1.position.x, 
+             body1.position.y, 
+             body2.position.x, 
+             body2.position.y);
+        strokeWeight(1);
     }
 }
 
@@ -73,4 +75,12 @@ function mouseInCanvas(x, y, canvasX, canvasY){
     else{
         return true;
     }     
+}
+
+
+function getDistance(x1, y1, x2, y2){
+    let y = x2 - x1;
+    let x = y2 - y1;
+    
+    return Math.sqrt(x * x + y * y);
 }
