@@ -1,5 +1,5 @@
 function MyRect(x, y, w, h, options){ //we need to add options to this
-    this.body = Bodies.rectangle(x, y, w, h, options); //{ collisionFilter: { group: group } }
+    this.body = Bodies.rectangle(x, y, w, h, options, composite = engine.world); //{ collisionFilter: { group: group } }
 
     /*
     collisionFilter: {
@@ -12,7 +12,7 @@ function MyRect(x, y, w, h, options){ //we need to add options to this
     this.w = w;
     this.h = h;
 
-    World.add(engine.world, [this.body]); //
+    Composite.add(composite, [this.body]); //
 
     this.show = function(){
         var pos = this.body.position;
@@ -27,12 +27,12 @@ function MyRect(x, y, w, h, options){ //we need to add options to this
     }
 }
 
-function MyCircle(x, y, r, options){
+function MyCircle(x, y, r, options, composite = engine.world){
     this.body = Bodies.circle(x, y, r, options);
 
     this.r = r;
 
-    World.add(engine.world, [this.body]);
+    Composite.add(composite, [this.body]);
 
     this.show = function(){
         var pos = this.body.position;
@@ -47,7 +47,7 @@ function MyCircle(x, y, r, options){
     }
 }
 
-function MyConsraint(body1, body2, length, stiffness, thickness = 1){ //have to pass box.body into this now
+function MyConsraint(body1, body2, length, stiffness, thickness = 1, composite = engine.world){ //have to pass box.body into this now
 
     var constr = Constraint.create({
         bodyA: body1,
@@ -56,7 +56,7 @@ function MyConsraint(body1, body2, length, stiffness, thickness = 1){ //have to 
         stiffness: stiffness
     })
 
-    World.add(engine.world, constr);
+    Composite.add(composite, constr);
 
     this.show = function(){
         strokeWeight(thickness);
