@@ -64,6 +64,7 @@ function mouseClicked(){
 
 function changeScene(newSceneIndex, creatureComposite = null){
   sceneIndex = newSceneIndex;
+  console.log(creatureComposite)
   if (sceneIndex == 0){
     creature_Creator();
     mySetup();

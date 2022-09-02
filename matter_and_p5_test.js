@@ -57,7 +57,7 @@ function matter_and_p5_test(){
     //myObjects.push(box3);
     myObjects.push(circle1);
 
-    boxConst = new MyConsraint(tempBox1, tempBox2, 100, 0.4);
+    boxConst = new MyConsraint(tempBox1.body, tempBox2.body, 100, 0.4);
 
 
     var canvasMouse = Mouse.create(canvas.elt);

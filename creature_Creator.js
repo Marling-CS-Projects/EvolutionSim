@@ -16,9 +16,9 @@ function creature_Creator(){
     var creatureComposite;
 
     this.mySetup = function() {
-        creatureComposite = Composite.create();
+        creatureComposite = new Composite.create();
 
-        var canvas = createCanvas(400, 400);
+        var canvas = createCanvas(800, 800);
         engine = Engine.create();
         world = engine.world;
         Matter.Runner.run(engine);
@@ -86,26 +86,34 @@ function creature_Creator(){
         console.log(world);
         console.log(creatureComposite);
 
-        creatureComposite = [];
+        creatureComposite.bodies = []; //composites methods are not working on my custom composite :)
+        creatureComposite.constraints = [];
+
         creatureRender = [];
-        creatureComposite = Composite.create();
-        Composite.add(world, creatureComposite); //composites methods are not working on my custom composite :)
         console.log(creatureComposite);
         console.log("restart button pressed");
     }  
 
     function doneButtonDown(){
-        //next scene
+        if(creatureComposite.bodies.length <= 3 || creatureComposite.constraints.length <=3){
+            console.log("not enough joints / muscles")
+            return;
+        }
+        jointButton.remove();
+        muscleButton.remove();
+        restartButton.remove();
+        doneButton.remove();
+        changeScene(1, creatureComposite);
     }
 
     //Matter.Composite.scale(composite, scaleX, scaleY, point, [recursive=true]) //should be useful for later
 
     this.myMouseClicked = function(){
-        if(mouseInCanvas(mouseX, mouseY, 400, 400)){
+        if(mouseInCanvas(mouseX, mouseY, 800, 800)){
             switch(switchCaseX) {
                 case 0:
                     creatureRender.push(new MyCircle(mouseX, mouseY, 15, { isStatic: true }, creatureComposite));
-                    console.log(Composite.allBodies(creatureComposite));
+                    console.log(creatureComposite);
                     break;
                 case 1:
                     if(mConstraint.body != null){
@@ -115,7 +123,7 @@ function creature_Creator(){
                         else{
                             var distance = getDistance(temp.position.x, temp.position.y, mConstraint.body.position.x, mConstraint.body.position.y);
                             creatureRender.push(new MyConsraint(temp, mConstraint.body, distance, 0.4, 10, creatureComposite));
-                            console.log(Composite.allConstraints(creatureComposite));
+                            console.log(creatureComposite);
                 
                             temp = null;
                         }
