@@ -46,8 +46,8 @@ function matter_and_p5_test(){
     connectedBoxes.push(tempBox1);
     connectedBoxes.push(tempBox2);
 
-    var box1 = new MyRect(100, 250, 40, 40, {collisionFilter: {category: cat1} });
-    var box2 = new MyRect(150, 250, 30, 30, {collisionFilter: {category: cat2} });
+    var box1 = new MyRect(100, 250, 40, 40, {collisionFilter: {category: cat1, mask: catDefault | cat1} });
+    var box2 = new MyRect(150, 250, 30, 30, {collisionFilter: {category: cat2, mask: catDefault | cat2} });
     //var box3 = new MyRect(200, 250, 20, 20, {collisionFilter: {category: cat3} });
 
     var circle1 = new MyCircle(250, 250, 20, {collisionFilter: {mask: catDefault | cat1} });

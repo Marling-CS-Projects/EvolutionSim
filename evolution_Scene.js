@@ -1,7 +1,11 @@
 function evolution_Scene(creatureCompositeIn, creatureRenderIn){
 
+    //collision catagories and masks, all powers of 2, like bits
+
     var ground;
     var circle;
+
+    let creatureContainer = [];
 
     this.mySetup = function() {
         var canvas = createCanvas(800, 800);
@@ -12,21 +16,30 @@ function evolution_Scene(creatureCompositeIn, creatureRenderIn){
         engine.gravity.scale = 0.001;
         engine.gravity.y = 1;
 
-        ground = new MyRect(400, 790, 800, 20, { isStatic: true });
-        console.log(ground);
+        ground = new MyRect(400, 790, 800, 100, { isStatic: true });
+        //console.log(ground);
 
         circle = new MyCircle(200, 200, 50, {})
-        console.log(circle);
+        //console.log(circle);
         
         var canvasMouse = Mouse.create(canvas.elt);
         mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
-
-        creatureCompositeIn.parent.gravity.scale = 0.001;
-
+        Composite.add(world, mConstraint);
+      
+        for(let i = 0; i < 5; i++){
+            creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2**i))
+            creatureContainer[i].creatureSetup();
+        }
+        console.log(creatureContainer)
+        
+        
+        /* //needed to colide with the ground
         for(let i = 0; i < creatureCompositeIn.bodies.length; i++){
             Composite.add(world, creatureCompositeIn.bodies[i]);
-            //changing collision layer?
+            creatureCompositeIn.bodies[i].collisionFilter = {category: 2, mask: 1 | 2};
         }
+        console.log(creatureCompositeIn)
+        */
     }
 
     this.myDraw = function(){
@@ -36,16 +49,11 @@ function evolution_Scene(creatureCompositeIn, creatureRenderIn){
 
         circle.show();
 
-        for (let i = 0; i< creatureRenderIn.length; i++){
-            creatureRenderIn[i].show() //for each element in list render it
+        for (let i = 0; i< creatureContainer.length; i++){
+            creatureContainer[i].show() //for each element in list render it
         }
 
-        creatureCompositeIn.constraints[0].length += 1;
-    }
-
-    this.myMouseClicked = function(){
-        creatureCompositeIn.constraints[0].length += 100;
-        console.log(creatureCompositeIn.constraints[0].length);
+        //creatureCompositeIn.constraints[0].length += 1;
     }
 
     //create object for a creature

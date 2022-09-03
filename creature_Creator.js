@@ -75,31 +75,31 @@ function creature_Creator(){
     function jointButtonDown(){
         switchCaseX = 0;
         temp = null;
-        console.log("joint button pressed");
+        //console.log("joint button pressed");
     }
 
     function muscleButtonDown(){
         switchCaseX = 1;
-        console.log("muscle button pressed");
+        //console.log("muscle button pressed");
     }
 
     function restartButtonDown(){
         temp = null;
-        console.log(world);
-        console.log(creatureComposite);
+        //console.log(world);
+        //console.log(creatureComposite);
 
         creatureComposite.bodies = []; //composites methods are not working on my custom composite :)
         creatureComposite.constraints = [];
 
         creatureRender = [];
-        console.log(creatureComposite);
-        console.log("restart button pressed");
+        //console.log(creatureComposite);
+        //console.log("restart button pressed");
     }  
 
     function doneButtonDown(){
         if(creatureComposite.bodies.length <= 3 || creatureComposite.constraints.length <=3){
             console.log("not enough joints / muscles")
-            return;
+            //return; //TODO - uncomment this post testing
         }
         jointButton.remove();
         muscleButton.remove();
@@ -114,8 +114,8 @@ function creature_Creator(){
         if(mouseInCanvas(mouseX, mouseY, 800, 800)){
             switch(switchCaseX) {
                 case 0:
-                    creatureRender.push(new MyCircle(mouseX, mouseY, 15, {}, creatureComposite));
-                    console.log(creatureComposite);
+                    creatureRender.push(new MyCircle(mouseX, mouseY, 15, {isStatic: true}, creatureComposite));
+                    //console.log(creatureRender);
                     break;
                 case 1:
                     if(mConstraint.body != null){
@@ -125,7 +125,7 @@ function creature_Creator(){
                         else{
                             var distance = getDistance(temp.position.x, temp.position.y, mConstraint.body.position.x, mConstraint.body.position.y);
                             creatureRender.push(new MyConsraint(temp, mConstraint.body, distance, 0.1, 10, creatureComposite)); //need to have the stiffness low or it bugs out
-                            console.log(creatureComposite);
+                            //console.log(creatureComposite);
                 
                             temp = null;
                         }

@@ -1,5 +1,7 @@
 var sceneIndex = 0; //put on cookie to maintain through refresh? TODO learn what a cookie is
 
+//neural evolution
+
 /*
 scene index list:
 (bit temp rn bc script names are stupid rn)
@@ -64,7 +66,6 @@ function mouseClicked(){
 
 function changeScene(newSceneIndex, creatureComposite = null, creatureRender = null){
   sceneIndex = newSceneIndex;
-  console.log(creatureComposite)
   if (sceneIndex == 0){
     creature_Creator();
     mySetup();

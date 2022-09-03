@@ -84,3 +84,70 @@ function getDistance(x1, y1, x2, y2){
     
     return Math.sqrt(x * x + y * y);
 }
+
+function MyCreature(McreatureID, compositeIn, McreatureColisionLayer){ //we need to add options to this
+    let McreatureComposite;
+    let McreatureRenderer = [];
+
+    this.McreatureID = McreatureID;
+    this.McreatureComposite = McreatureComposite;
+    this.McreatureColisionLayer = McreatureColisionLayer;
+    this.McreatureRenderer = McreatureRenderer;
+
+    this.creatureSetup = function(){
+        McreatureComposite = new Composite.create();
+        Composite.add(world, McreatureComposite);
+        for(let i = 0; i < compositeIn.bodies.length; i++){
+            McreatureRenderer.push(new MyCircle(compositeIn.bodies[i].position.x, compositeIn.bodies[i].position.y, compositeIn.bodies[i].circleRadius, 
+                {collisionFilter: {category: McreatureColisionLayer, mask: 1 | McreatureColisionLayer}}, McreatureComposite));
+        }
+        for(let i = 0; i < compositeIn.constraints.length; i++){
+            //console.log(compositeIn.constraints[i].bodyA.id, compositeIn.constraints[i].bodyB.id)
+            let j = 0;
+            while (compositeIn.constraints[i].bodyA.id != compositeIn.bodies[j].id){
+                j++;
+            }
+            let tempBodyA = McreatureComposite.bodies[j];
+            j = 0;
+            while (compositeIn.constraints[i].bodyB.id != compositeIn.bodies[j].id){
+                j++;
+            }
+            let tempBodyB = McreatureComposite.bodies[j];
+
+            McreatureRenderer.push(new MyConsraint(tempBodyA, tempBodyB, compositeIn.constraints[i].length, compositeIn.constraints[0].stiffness, 10, McreatureComposite))
+        }
+        //console.log(McreatureComposite);
+    }
+
+    this.show = function(){     
+        for (let i = 0; i< McreatureRenderer.length; i++){
+            McreatureRenderer[i].show() //for each element in list render it
+        }
+    }
+}
+
+/* //attempt 1
+function MyCreature(McreatureID, McreatureComposite, McreatureColisionLayer, McreatureRenderer){ //we need to add options to this
+    this.creatureID = McreatureID;
+    this.creatureComposite = McreatureComposite;
+    this.creatureColisionLayer = McreatureColisionLayer;
+    this.creatureRenderer = McreatureRenderer;
+
+    this.creatureSetup = function(){
+        console.log(McreatureRenderer)
+
+        for(let i = 0; i < McreatureComposite.bodies.length; i++){
+            //Composite.add(world, McreatureComposite.bodies[i]);
+            //McreatureComposite.bodies[i].collisionFilter = {category: McreatureColisionLayer, mask: 1 | McreatureColisionLayer}; //reativate later
+        }
+        //Composite.add(world, creatureComposite);
+    }
+
+    this.show = function(){
+        
+        for (let i = 0; i< McreatureRenderer.length; i++){
+            McreatureRenderer[i].show() //for each element in list render it
+        }
+    }
+}
+*/
