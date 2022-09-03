@@ -31,7 +31,7 @@ if (sceneIndex == 0){
     creature_Creator();
 }
 else if (sceneIndex == 1){
-    matter_and_p5_test();
+    evolution_Scene();
 }
 
 /*
@@ -62,7 +62,7 @@ function mouseClicked(){
   myMouseClicked(); //preferably, this would be function anyInputPressed(), but this is a start for now, this is also currently only scene switching, will change when buttons are a thing
 }
 
-function changeScene(newSceneIndex, creatureComposite = null){
+function changeScene(newSceneIndex, creatureComposite = null, creatureRender = null){
   sceneIndex = newSceneIndex;
   console.log(creatureComposite)
   if (sceneIndex == 0){
@@ -70,7 +70,7 @@ function changeScene(newSceneIndex, creatureComposite = null){
     mySetup();
   }
   else if (sceneIndex == 1){
-    matter_and_p5_test();
+    evolution_Scene(creatureComposite, creatureRender);
     mySetup();
   }
 }

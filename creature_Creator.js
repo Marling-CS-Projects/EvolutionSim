@@ -22,6 +22,8 @@ function creature_Creator(){
         engine = Engine.create();
         world = engine.world;
         Matter.Runner.run(engine);
+
+        engine.gravity.scale = 0;
         
         var canvasMouse = Mouse.create(canvas.elt);
         mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
@@ -103,7 +105,7 @@ function creature_Creator(){
         muscleButton.remove();
         restartButton.remove();
         doneButton.remove();
-        changeScene(1, creatureComposite);
+        changeScene(1, creatureComposite, creatureRender);
     }
 
     //Matter.Composite.scale(composite, scaleX, scaleY, point, [recursive=true]) //should be useful for later
@@ -112,7 +114,7 @@ function creature_Creator(){
         if(mouseInCanvas(mouseX, mouseY, 800, 800)){
             switch(switchCaseX) {
                 case 0:
-                    creatureRender.push(new MyCircle(mouseX, mouseY, 15, { isStatic: true }, creatureComposite));
+                    creatureRender.push(new MyCircle(mouseX, mouseY, 15, {}, creatureComposite));
                     console.log(creatureComposite);
                     break;
                 case 1:
@@ -122,7 +124,7 @@ function creature_Creator(){
                         }
                         else{
                             var distance = getDistance(temp.position.x, temp.position.y, mConstraint.body.position.x, mConstraint.body.position.y);
-                            creatureRender.push(new MyConsraint(temp, mConstraint.body, distance, 0.4, 10, creatureComposite));
+                            creatureRender.push(new MyConsraint(temp, mConstraint.body, distance, 0.1, 10, creatureComposite)); //need to have the stiffness low or it bugs out
                             console.log(creatureComposite);
                 
                             temp = null;
