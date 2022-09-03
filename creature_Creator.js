@@ -105,7 +105,7 @@ function creature_Creator(){
         muscleButton.remove();
         restartButton.remove();
         doneButton.remove();
-        changeScene(1, creatureComposite, creatureRender);
+        changeScene(1, creatureComposite);
     }
 
     //Matter.Composite.scale(composite, scaleX, scaleY, point, [recursive=true]) //should be useful for later

@@ -1,6 +1,9 @@
-function evolution_Scene(creatureCompositeIn, creatureRenderIn){
+function evolution_Scene(creatureCompositeIn){
 
     //collision catagories and masks, all powers of 2, like bits
+
+    //https://www.youtube.com/watch?v=lu5ul7z4icQ&list=PLRqwX-V7Uu6Yd3975YwxrR0x40XGJ_KGO
+    //^^for next time
 
     var ground;
     var circle;
