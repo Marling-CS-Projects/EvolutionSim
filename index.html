@@ -1,80 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>NBHome 2</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <style>
-        body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
-        .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
-        .fa-anchor,.fa-coffee {font-size:200px}
-    </style>
-</head>
-<body>
+    <head>
+        <title>NBHome 2</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+            rel="stylesheet"
+            href="https://www.w3schools.com/w3css/4/w3.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Lato"
+        />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Montserrat"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        />
+        <style>
+            body,
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                font-family: "Lato", sans-serif;
+            }
+            .w3-bar,
+            h1,
+            button {
+                font-family: "Montserrat", sans-serif;
+            }
+            .fa-anchor,
+            .fa-coffee {
+                font-size: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Navbar -->
+        <div class="w3-top">
+            <div class="w3-bar w3-red w3-card w3-left-align w3-large">
+                <a
+                    class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red"
+                    href="javascript:void(0);"
+                    onclick="myFunction()"
+                    title="Toggle Navigation Menu"
+                    ><i class="fa fa-bars"></i
+                ></a>
+                <a
+                    href="index.html"
+                    class="w3-bar-item w3-button w3-padding-large w3-white"
+                    >Home</a
+                >
+                <a
+                    href="game_page.html"
+                    class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"
+                    >Evolution Sim</a
+                >
+            </div>
 
-<!-- Navbar -->
-<div class="w3-top">
-  <div class="w3-bar w3-red w3-card w3-left-align w3-large">
-    <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-    <a href="index.html" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
-    <a href="game_page.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white ">Evolution Sim</a>
-  </div>
+            <!-- Navbar on small screens -->
+            <div
+                id="navDemo"
+                class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large"
+            >
+                <a
+                    href="index.html"
+                    class="w3-bar-item w3-button w3-padding-large"
+                    >Home</a
+                >
+                <a
+                    href="game_page.html"
+                    class="w3-bar-item w3-button w3-padding-large"
+                    >Evolution Sim</a
+                >
+            </div>
+        </div>
 
-  <!-- Navbar on small screens -->
-  <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
-    <a href="index.html" class="w3-bar-item w3-button w3-padding-large">Home</a>
-    <a href="game_page.html" class="w3-bar-item w3-button w3-padding-large">Evolution Sim</a>
-  </div>
-</div>
+        <!-- Header -->
+        <header
+            class="w3-container w3-red w3-center"
+            style="padding: 128px 16px"
+        >
+            <h1 class="w3-margin w3-jumbo">
+                Evolution Simulator Powered by Machine Learning
+            </h1>
+            <p class="w3-xlarge">Conceived by Nate Bradshaw</p>
+            <a
+                href="game_page.html"
+                class="w3-button w3-black w3-padding-large w3-large w3-margin-top"
+                >Evolution Simulator</a
+            >
+        </header>
 
-<!-- Header -->
-<header class="w3-container w3-red w3-center" style="padding:128px 16px">
-  <h1 class="w3-margin w3-jumbo">Evolution Simulator Powered by Machine Learning</h1>
-  <p class="w3-xlarge">NB</p>
-  <a href="game_page.html" class="w3-button w3-black w3-padding-large w3-large w3-margin-top">Evolution Simulator</a>
-</header>
+        <!-- First Grid -->
+        <div class="w3-row-padding w3-padding-64 w3-container">
+            <div class="w3-content">
+                <div class="w3-twothird">
+                    <h1>Website</h1>
+                    <h5 class="w3-padding-32">
+                        This is a website for simulating evolutions
+                    </h5>
 
+                    <p class="w3-text-grey">
+                        Evolution is change in the heritable characteristics of
+                        biological populations over successive generations.
+                        These characteristics are the expressions of genes that
+                        are passed on from parent to offspring during
+                        reproduction. Different characteristics tend to exist
+                        within any given population as a result of mutation,
+                        genetic recombination and other sources of genetic
+                        variation. Evolution occurs when evolutionary processes
+                        such as natural selection (including sexual selection)
+                        and genetic drift act on this variation, resulting in
+                        certain characteristics becoming more common or rare
+                        within a population. The evolutionary pressures that
+                        determine whether a characteristic would be common or
+                        rare within a population constantly change, resulting in
+                        a change in heritable characteristics arising over
+                        successive generations. It is this process of evolution
+                        that has given rise to biodiversity at every level of
+                        biological organisation, including the levels of
+                        species, individual organisms and molecules.
+                        <a href="https://en.wikipedia.org/wiki/Evolution">
+                            [Reference - Wikipedia]
+                        </a>
+                    </p>
+                </div>
 
-<!-- First Grid -->
-<div class="w3-row-padding w3-padding-64 w3-container">
-  <div class="w3-content">
-    <div class="w3-twothird">
-      <h1>Lorem Ipsum</h1>
-      <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
+                <div class="w3-third w3-center">
+                    <i class="fa fa-anchor w3-padding-64 w3-text-red"></i>
+                </div>
+            </div>
+        </div>
 
-      <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
+        <!-- Second Grid -->
+        <div class="w3-row-padsding w3-light-grey w3-padding-64 w3-container">
+            <div class="w3-content">
+                <div class="w3-third w3-center">
+                    <i
+                        class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"
+                    ></i>
+                </div>
 
-    <div class="w3-third w3-center">
-      <i class="fa fa-anchor w3-padding-64 w3-text-red"></i>
-    </div>
-  </div>
-</div>
+                <div class="w3-twothird">
+                    <h1>Coffee mug</h1>
+                    <h5 class="w3-padding-32">
+                        On the left is an image of a coffee mug
+                    </h5>
 
-<!-- Second Grid -->
-<div class="w3-row-padsding w3-light-grey w3-padding-64 w3-container">
-  <div class="w3-content">
-    <div class="w3-third w3-center">
-      <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i>
-    </div>
-
-    <div class="w3-twothird">
-      <h1>Lorem Ipsum</h1>
-      <h5 class="w3-padding-32">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</h5>
-
-      <p class="w3-text-grey">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
-  </div>
-</div>
-<!--
+                    <p class="w3-text-grey">
+                        Coffee is nice, I like coffee - Alfie Ranstead <br />
+                        <a href="https://www.alfieranstead.com"
+                            >I'm a passionate computer scientist who has strong
+                            interests in mathematical and logical thinking, and
+                            I'm always looking to learn new things. I've been
+                            tinkering with computers for as long as I can
+                            remember, and I'm interested in most things related
+                            to them. I've been programming since I was 9 years
+                            old, started creating videos not long after my 10th
+                            Birthday, and have been making little circuits and
+                            electronic gadgets since I was 8!</a
+                        >
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!--
 <div class="w3-container w3-black w3-center w3-opacity w3-padding-64">
     <h1 class="w3-margin w3-xlarge">Quote of the day: live life</h1>
 </div>
@@ -92,17 +189,16 @@
  <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
 </footer>
 -->
-<script>
-// Used to toggle the menu on small screens when clicking on the menu button
-function myFunction() {
-  var x = document.getElementById("navDemo");
-  if (x.className.indexOf("w3-show") == -1) {
-    x.className += " w3-show";
-  } else { 
-    x.className = x.className.replace(" w3-show", "");
-  }
-}
-</script>
-
-</body>
+        <script>
+            // Used to toggle the menu on small screens when clicking on the menu button
+            function myFunction() {
+                var x = document.getElementById("navDemo");
+                if (x.className.indexOf("w3-show") == -1) {
+                    x.className += " w3-show";
+                } else {
+                    x.className = x.className.replace(" w3-show", "");
+                }
+            }
+        </script>
+    </body>
 </html>
