@@ -10,9 +10,6 @@ function evolution_Scene(creatureCompositeIn){
     let creatureContainer = [];
 
     this.mySetup = function() {
-        //tf.setBackend("cpu"); //if running slow???
-
-
         var canvas = createCanvas(800, 800);
         engine = Engine.create();
         world = engine.world;
@@ -21,14 +18,16 @@ function evolution_Scene(creatureCompositeIn){
         engine.gravity.scale = 0.001;
         engine.gravity.y = 1;
 
-        ground = new MyRect(400, 790, 800, 100, { isStatic: true });
+        ground = new MyRect(400, 790, 9999999, 100, { isStatic: true });
         //console.log(ground);
         
         var canvasMouse = Mouse.create(canvas.elt);
         mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
         Composite.add(world, mConstraint);
+
+        tf.setBackend("cpu"); //idk
       
-        for(let i = 0; i < 5; i++){
+        for(let i = 0; i < 32; i++){ //32 differnt collision layers is max due to bitmask, so thats 32 different creature limit
             creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2**i))
             creatureContainer[i].creatureSetup();
         }
@@ -51,8 +50,15 @@ function evolution_Scene(creatureCompositeIn){
 
         for (let i = 0; i< creatureContainer.length; i++){
             creatureContainer[i].show() //for each element in list render it
+            creatureContainer[i].think(); //nn things
         }
-
+  
+        /*
+        //setTimeout(myFunction, 3000); //3000ms = 3 secs
+        if (timeLeft == 0) { //made up var, but timer will be how i go to next gen
+            nextGeneration();
+        }
+        */
         //creatureCompositeIn.constraints[0].length += 1;
     }
 

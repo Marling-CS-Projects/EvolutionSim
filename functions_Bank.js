@@ -86,7 +86,7 @@ function getDistance(x1, y1, x2, y2){
 }
 
 
-function MyCreature(McreatureID, compositeIn, McreatureColisionLayer){ //this acts as one big class constructor, but with a lot less "this."
+function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //this acts as one big class constructor, but with a lot less "this."
     let McreatureComposite = new Composite.create();
     let McreatureRenderer = [];
 
@@ -94,6 +94,54 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer){ //this ac
     this.McreatureComposite = McreatureComposite;
     this.McreatureColisionLayer = McreatureColisionLayer;
     this.McreatureRenderer = McreatureRenderer;
+
+    let score = 0;
+    let fitness = 0;
+    this.score = score;
+    this.fitness = fitness;
+    this.brain = brain;
+    if (brain) { //if brain == null i think
+      this.brain = brain.copy();
+    } else {
+      this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 2), (compositeIn.constraints.length * 2));
+      //input: current length of constraints, output: increase / decrease constraint lengths
+      //thinking now, if a creature can just extend a constaint to inf to get 1 circle as far as possable that would be borring
+      //so I think basing winner on furthest last point or avreage possisiton of points would be better
+    }
+
+    this.dispose = function() { //memory cleanup
+        this.brain.dispose();
+    }
+
+    this.mutate = function() {
+        this.brain.mutate(0.1);
+    }
+
+    this.think = function() {   
+        let inputs = [];
+
+        for(let i = 0; i < McreatureComposite.constraints.length; i++){
+            inputs[i] = McreatureComposite.constraints[i].length;
+        }
+
+        let output = this.brain.predict(inputs);
+
+        // 0 - increase constraint [0]
+        // 1 - decrease constraint [0]
+        // 2 - increase constraint [1]
+        // 3 - decrease constraint [1]
+
+        const maxVal = output.indexOf(Math.max(...output));
+        
+        if(maxVal % 2 == 0) {//even
+            McreatureComposite.constraints[maxVal / 2].length += 1;
+            //increaseConstraint((maxVal / 2)); //need to make this function
+        }
+        else{//odd
+            McreatureComposite.constraints[(maxVal - 1) / 2].length -= 1;
+            //decreaseConstraint(((maxVal - 1) / 2));//and this, oe merge the imaginary functions
+        }
+      }
 
     this.creatureSetup = function(){
         Composite.add(world, McreatureComposite);
@@ -180,10 +228,10 @@ class NeuralNetwork{
 
     predict(inputs){
         return tf.tidy(() => {
-            const xs = tf.tensor2D([inputs]);
+            const xs = tf.tensor2d([inputs]);
             const ys = this.model.predict(xs);
             const outputs = ys.dataSync();
-            console.log(outputs);
+            //console.log(outputs);
             return outputs;
         })
     }
@@ -206,6 +254,7 @@ class NeuralNetwork{
     }
 }
 
+/*
 class Bird {
     constructor(brain) {
       this.y = height / 2;
@@ -217,18 +266,18 @@ class Bird {
   
       this.score = 0;
       this.fitness = 0;
-      if (brain) {
+      if (brain) {//
         this.brain = brain.copy();
       } else {
         this.brain = new NeuralNetwork(5, 8, 2);
       }
     }
   
-    dispose() {
+    dispose() {//
       this.brain.dispose();
     }
   
-    show() {
+    show() { //
       stroke(255);
       fill(255, 100);
       ellipse(this.x, this.y, 32, 32);
@@ -238,7 +287,7 @@ class Bird {
       this.velocity += this.lift;
     }
   
-    mutate() {
+    mutate() {//
       this.brain.mutate(0.1);
     }
   
@@ -279,3 +328,4 @@ class Bird {
       this.y += this.velocity;
     }
   }
+  */
