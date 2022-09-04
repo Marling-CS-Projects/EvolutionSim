@@ -6,11 +6,13 @@ function evolution_Scene(creatureCompositeIn){
     //^^for next time
 
     var ground;
-    var circle;
 
     let creatureContainer = [];
 
     this.mySetup = function() {
+        //tf.setBackend("cpu"); //if running slow???
+
+
         var canvas = createCanvas(800, 800);
         engine = Engine.create();
         world = engine.world;
@@ -21,9 +23,6 @@ function evolution_Scene(creatureCompositeIn){
 
         ground = new MyRect(400, 790, 800, 100, { isStatic: true });
         //console.log(ground);
-
-        circle = new MyCircle(200, 200, 50, {})
-        //console.log(circle);
         
         var canvasMouse = Mouse.create(canvas.elt);
         mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
@@ -50,8 +49,6 @@ function evolution_Scene(creatureCompositeIn){
 
         ground.show();
 
-        circle.show();
-
         for (let i = 0; i< creatureContainer.length; i++){
             creatureContainer[i].show() //for each element in list render it
         }
@@ -59,7 +56,7 @@ function evolution_Scene(creatureCompositeIn){
         //creatureCompositeIn.constraints[0].length += 1;
     }
 
-    //create object for a creature
+    //create object for a creature - done
     //give creature a neural network
     //it needs inputs, so length of muscles, positions of joints ect
     //and outputs like target length of muscle
@@ -77,3 +74,41 @@ function evolution_Scene(creatureCompositeIn){
 
     }
 }
+
+/*
+function nextGeneration() {
+  console.log('next generation');
+  calculateFitness();
+  for (let i = 0; i < TOTAL; i++) {
+    birds[i] = pickOne();
+  }
+  for (let i = 0; i < TOTAL; i++) {
+    savedBirds[i].dispose();
+  }
+  savedBirds = [];
+}
+
+function pickOne() {
+  let index = 0;
+  let r = random(1);
+  while (r > 0) {
+    r = r - savedBirds[index].fitness;
+    index++;
+  }
+  index--;
+  let bird = savedBirds[index];
+  let child = new Bird(bird.brain);
+  child.mutate();
+  return child;
+}
+
+function calculateFitness() {
+  let sum = 0;
+  for (let bird of savedBirds) {
+    sum += bird.score;
+  }
+  for (let bird of savedBirds) {
+    bird.fitness = bird.score / sum;
+  }
+}
+*/

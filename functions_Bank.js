@@ -85,8 +85,9 @@ function getDistance(x1, y1, x2, y2){
     return Math.sqrt(x * x + y * y);
 }
 
-function MyCreature(McreatureID, compositeIn, McreatureColisionLayer){ //we need to add options to this
-    let McreatureComposite;
+
+function MyCreature(McreatureID, compositeIn, McreatureColisionLayer){ //this acts as one big class constructor, but with a lot less "this."
+    let McreatureComposite = new Composite.create();
     let McreatureRenderer = [];
 
     this.McreatureID = McreatureID;
@@ -95,7 +96,6 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer){ //we need
     this.McreatureRenderer = McreatureRenderer;
 
     this.creatureSetup = function(){
-        McreatureComposite = new Composite.create();
         Composite.add(world, McreatureComposite);
         for(let i = 0; i < compositeIn.bodies.length; i++){
             McreatureRenderer.push(new MyCircle(compositeIn.bodies[i].position.x, compositeIn.bodies[i].position.y, compositeIn.bodies[i].circleRadius, 
@@ -126,28 +126,156 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer){ //we need
     }
 }
 
-/* //attempt 1
-function MyCreature(McreatureID, McreatureComposite, McreatureColisionLayer, McreatureRenderer){ //we need to add options to this
-    this.creatureID = McreatureID;
-    this.creatureComposite = McreatureComposite;
-    this.creatureColisionLayer = McreatureColisionLayer;
-    this.creatureRenderer = McreatureRenderer;
 
-    this.creatureSetup = function(){
-        console.log(McreatureRenderer)
-
-        for(let i = 0; i < McreatureComposite.bodies.length; i++){
-            //Composite.add(world, McreatureComposite.bodies[i]);
-            //McreatureComposite.bodies[i].collisionFilter = {category: McreatureColisionLayer, mask: 1 | McreatureColisionLayer}; //reativate later
+//https://www.youtube.com/watch?v=cdUNkwXx-I4&list=PLRqwX-V7Uu6Yd3975YwxrR0x40XGJ_KGO&index=9
+class NeuralNetwork{
+    constructor(a, b, c, d){
+        if(a instanceof tf.sequential){
+            this.model = a;
+            this.input_nodes = b;
+            this.hidden_nodes = c;
+            this.output_nodes = d;
         }
-        //Composite.add(world, creatureComposite);
+        else{
+            this.input_nodes = a;
+            this.hidden_nodes = b;
+            this.output_nodes = c;
+            this.model = this.createModel();
+        }
     }
 
-    this.show = function(){
-        
-        for (let i = 0; i< McreatureRenderer.length; i++){
-            McreatureRenderer[i].show() //for each element in list render it
-        }
+    copy(){
+        return tf.tidy(() => {
+            const modelCopy = this.createModel();
+            const weights = this.model.getWeights();
+            const weightCopies = [];
+            for (let i = 0; i < weights.length; i++){
+                weightCopies[i] = weights[i].clone();
+            }
+            modelCopy.setWeights(weightCopies);
+            return new NeuralNetwork(modelCopy, this.input_nodes, this.hidden_nodes, this.output_nodes);
+        })
+    }
+
+    mutate(rate){
+        tf.tidy(() => {
+            const weights = this.model.getWeights();
+            const mutatedWeights = [];
+            for (let i = 0; i < weights.length; i++){
+                let tensor = weights[i];
+                let shape = weights[i].shape;
+                let values = tensor.dataSync().slice();
+                for(let j = 0; j < values.length; j++){
+                    if(random(1) < rate){
+                        let w = values[j];
+                        values[j] = w + randomGaussian();
+                    }   
+                }
+                let newTensor = tf.tensor(values, shape);
+                mutatedWeights[i] = newTensor;
+            }
+            this.model.setWeights(mutatedWeights);
+        })
+    }
+
+    predict(inputs){
+        return tf.tidy(() => {
+            const xs = tf.tensor2D([inputs]);
+            const ys = this.model.predict(xs);
+            const outputs = ys.dataSync();
+            console.log(outputs);
+            return outputs;
+        })
+    }
+
+    createModel(){
+        const model = tf.sequential();
+        const hidden = tf.layers.dense({
+            units: this.hidden_nodes,
+            inputShape: [this.input_nodes],
+            activation: "sigmoid"
+        });
+        model.add(hidden);
+        const output = tf.layers.dense({
+            units: this.output_nodes,
+            activation: "softmax"
+        });
+        model.add(output);
+        return model;
+        //this.model.compile({});
     }
 }
-*/
+
+class Bird {
+    constructor(brain) {
+      this.y = height / 2;
+      this.x = 64;
+  
+      this.gravity = 0.8;
+      this.lift = -12;
+      this.velocity = 0;
+  
+      this.score = 0;
+      this.fitness = 0;
+      if (brain) {
+        this.brain = brain.copy();
+      } else {
+        this.brain = new NeuralNetwork(5, 8, 2);
+      }
+    }
+  
+    dispose() {
+      this.brain.dispose();
+    }
+  
+    show() {
+      stroke(255);
+      fill(255, 100);
+      ellipse(this.x, this.y, 32, 32);
+    }
+  
+    up() {
+      this.velocity += this.lift;
+    }
+  
+    mutate() {
+      this.brain.mutate(0.1);
+    }
+  
+    think(pipes) {
+      // Find the closest pipe
+      let closest = null;
+      let closestD = Infinity;
+      for (let i = 0; i < pipes.length; i++) {
+        let d = pipes[i].x + pipes[i].w - this.x;
+        if (d < closestD && d > 0) {
+          closest = pipes[i];
+          closestD = d;
+        }
+      }
+  
+      let inputs = [];
+      inputs[0] = this.y / height;
+      inputs[1] = closest.top / height;
+      inputs[2] = closest.bottom / height;
+      inputs[3] = closest.x / width;
+      inputs[4] = this.velocity / 10;
+      let output = this.brain.predict(inputs);
+      //if (output[0] > output[1] && this.velocity >= 0) {
+      if (output[0] > output[1]) {
+        this.up();
+      }
+    }
+  
+    offScreen() {
+      return this.y > height || this.y < 0;
+    }
+  
+    update() {
+      this.score++;
+  
+      this.velocity += this.gravity;
+      //this.velocity *= 0.9;
+      this.y += this.velocity;
+    }
+  }
