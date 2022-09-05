@@ -85,11 +85,13 @@ function getDistance(x1, y1, x2, y2){
     return Math.sqrt(x * x + y * y);
 }
 
-
 function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //this acts as one big class constructor, but with a lot less "this."
     let McreatureComposite = new Composite.create();
     let McreatureRenderer = [];
 
+    let averageX = 0;
+
+    this.averageX = averageX;
     this.McreatureID = McreatureID;
     this.McreatureComposite = McreatureComposite;
     this.McreatureColisionLayer = McreatureColisionLayer;
@@ -101,12 +103,12 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //
     this.fitness = fitness;
     this.brain = brain;
     if (brain) { //if brain == null i think
-      this.brain = brain.copy();
+        this.brain = brain.copy();
     } else {
       this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 2), (compositeIn.constraints.length * 2));
       //input: current length of constraints, output: increase / decrease constraint lengths
       //thinking now, if a creature can just extend a constaint to inf to get 1 circle as far as possable that would be borring
-      //so I think basing winner on furthest last point or avreage possisiton of points would be better
+      //so I think basing winner on average possisiton of points would be better
     }
 
     this.dispose = function() { //memory cleanup
@@ -134,11 +136,16 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //
         const maxVal = output.indexOf(Math.max(...output));
         
         if(maxVal % 2 == 0) {//even
-            McreatureComposite.constraints[maxVal / 2].length += 1;
+            if(McreatureComposite.constraints[maxVal / 2].length <= compositeIn.constraints[maxVal / 2].length + 200){
+                McreatureComposite.constraints[maxVal / 2].length += 1;
+            }
             //increaseConstraint((maxVal / 2)); //need to make this function
         }
         else{//odd
-            McreatureComposite.constraints[(maxVal - 1) / 2].length -= 1;
+            if(McreatureComposite.constraints[(maxVal - 1) / 2].length > 30 &&
+               McreatureComposite.constraints[(maxVal - 1) / 2].length >= compositeIn.constraints[(maxVal - 1) / 2].length - 200){
+                McreatureComposite.constraints[(maxVal - 1) / 2].length -= 1;
+            }
             //decreaseConstraint(((maxVal - 1) / 2));//and this, oe merge the imaginary functions
         }
       }
@@ -171,86 +178,101 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //
         for (let i = 0; i< McreatureRenderer.length; i++){
             McreatureRenderer[i].show() //for each element in list render it
         }
+        //calculate average x
+        let tempX = 0;
+        for(let i =0; i < McreatureComposite.bodies.length; i++){
+            tempX += McreatureComposite.bodies[i].position.x;
+        }
+        averageX = tempX / McreatureComposite.bodies.length;
+        this.averageX = averageX;
+        //console.log(averageX)
     }
 }
 
 
 //https://www.youtube.com/watch?v=cdUNkwXx-I4&list=PLRqwX-V7Uu6Yd3975YwxrR0x40XGJ_KGO&index=9
-class NeuralNetwork{
-    constructor(a, b, c, d){
-        if(a instanceof tf.sequential){
-            this.model = a;
-            this.input_nodes = b;
-            this.hidden_nodes = c;
-            this.output_nodes = d;
+class NeuralNetwork {
+    constructor(a, b, c, d) {
+      if (a instanceof tf.Sequential) {
+        this.model = a;
+        this.input_nodes = b;
+        this.hidden_nodes = c;
+        this.output_nodes = d;
+      } else {
+        this.input_nodes = a;
+        this.hidden_nodes = b;
+        this.output_nodes = c;
+        this.model = this.createModel();
+      }
+    }
+  
+    copy() {
+      return tf.tidy(() => {
+        const modelCopy = this.createModel();
+        const weights = this.model.getWeights();
+        const weightCopies = [];
+        for (let i = 0; i < weights.length; i++) {
+          weightCopies[i] = weights[i].clone();
         }
-        else{
-            this.input_nodes = a;
-            this.hidden_nodes = b;
-            this.output_nodes = c;
-            this.model = this.createModel();
+        modelCopy.setWeights(weightCopies);
+        return new NeuralNetwork(
+          modelCopy,
+          this.input_nodes,
+          this.hidden_nodes,
+          this.output_nodes
+        );
+      });
+    }
+  
+    mutate(rate) {
+      tf.tidy(() => {
+        const weights = this.model.getWeights();
+        const mutatedWeights = [];
+        for (let i = 0; i < weights.length; i++) {
+          let tensor = weights[i];
+          let shape = weights[i].shape;
+          let values = tensor.dataSync().slice();
+          for (let j = 0; j < values.length; j++) {
+            if (random(1) < rate) {
+              let w = values[j];
+              values[j] = w + randomGaussian();
+            }
+          }
+          let newTensor = tf.tensor(values, shape);
+          mutatedWeights[i] = newTensor;
         }
+        this.model.setWeights(mutatedWeights);
+      });
     }
-
-    copy(){
-        return tf.tidy(() => {
-            const modelCopy = this.createModel();
-            const weights = this.model.getWeights();
-            const weightCopies = [];
-            for (let i = 0; i < weights.length; i++){
-                weightCopies[i] = weights[i].clone();
-            }
-            modelCopy.setWeights(weightCopies);
-            return new NeuralNetwork(modelCopy, this.input_nodes, this.hidden_nodes, this.output_nodes);
-        })
+  
+    dispose() {
+      this.model.dispose();
     }
-
-    mutate(rate){
-        tf.tidy(() => {
-            const weights = this.model.getWeights();
-            const mutatedWeights = [];
-            for (let i = 0; i < weights.length; i++){
-                let tensor = weights[i];
-                let shape = weights[i].shape;
-                let values = tensor.dataSync().slice();
-                for(let j = 0; j < values.length; j++){
-                    if(random(1) < rate){
-                        let w = values[j];
-                        values[j] = w + randomGaussian();
-                    }   
-                }
-                let newTensor = tf.tensor(values, shape);
-                mutatedWeights[i] = newTensor;
-            }
-            this.model.setWeights(mutatedWeights);
-        })
+  
+    predict(inputs) {
+      return tf.tidy(() => {
+        const xs = tf.tensor2d([inputs]);
+        const ys = this.model.predict(xs);
+        const outputs = ys.dataSync();
+        // console.log(outputs);
+        return outputs;
+      });
     }
-
-    predict(inputs){
-        return tf.tidy(() => {
-            const xs = tf.tensor2d([inputs]);
-            const ys = this.model.predict(xs);
-            const outputs = ys.dataSync();
-            //console.log(outputs);
-            return outputs;
-        })
-    }
-
-    createModel(){
-        const model = tf.sequential();
-        const hidden = tf.layers.dense({
-            units: this.hidden_nodes,
-            inputShape: [this.input_nodes],
-            activation: "sigmoid"
-        });
-        model.add(hidden);
-        const output = tf.layers.dense({
-            units: this.output_nodes,
-            activation: "softmax"
-        });
-        model.add(output);
-        return model;
-        //this.model.compile({});
+  
+    createModel() {
+      const model = tf.sequential();
+      const hidden = tf.layers.dense({
+        units: this.hidden_nodes,
+        inputShape: [this.input_nodes],
+        activation: 'sigmoid'
+      });
+      model.add(hidden);
+      const output = tf.layers.dense({
+        units: this.output_nodes,
+        activation: 'softmax'
+      });
+      model.add(output);
+      return model;
     }
 }
 

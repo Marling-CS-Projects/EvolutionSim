@@ -1,85 +1,160 @@
 function evolution_Scene(creatureCompositeIn){
 
-    //collision catagories and masks, all powers of 2, like bits
+  //collision catagories and masks, all powers of 2, like bits
 
-    //https://www.youtube.com/watch?v=lu5ul7z4icQ&list=PLRqwX-V7Uu6Yd3975YwxrR0x40XGJ_KGO
-    //^^for next time
+  //https://www.youtube.com/watch?v=lu5ul7z4icQ&list=PLRqwX-V7Uu6Yd3975YwxrR0x40XGJ_KGO
+  //^^for next time
 
-    var ground;
+  var ground;
 
-    let creatureContainer = [];
+  let creatureContainer = [];
+  const creatureNum = 32;
+  let bestCreaturesFromLast = [];
+  let firstBestID;
+  let secondBestID;
 
-    this.mySetup = function() {
-        var canvas = createCanvas(800, 800);
-        engine = Engine.create();
-        world = engine.world;
-        Matter.Runner.run(engine);
+  let timerStarted = false;
+  let currentGen = 0;
 
-        engine.gravity.scale = 0.001;
-        engine.gravity.y = 1;
+  this.mySetup = function() {
+    var canvas = createCanvas(800, 800);
+    engine = Engine.create();
+    world = engine.world;
+    Matter.Runner.run(engine);
 
-        ground = new MyRect(400, 790, 9999999, 100, { isStatic: true });
-        //console.log(ground);
-        
-        var canvasMouse = Mouse.create(canvas.elt);
-        mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
-        Composite.add(world, mConstraint);
+    engine.gravity.scale = 0.001;
+    engine.gravity.y = 1;
 
-        tf.setBackend("cpu"); //idk
-      
-        for(let i = 0; i < 32; i++){ //32 differnt collision layers is max due to bitmask, so thats 32 different creature limit
-            creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2**i))
-            creatureContainer[i].creatureSetup();
-        }
-        console.log(creatureContainer)
-        
-        
-        /* //needed to colide with the ground
-        for(let i = 0; i < creatureCompositeIn.bodies.length; i++){
-            Composite.add(world, creatureCompositeIn.bodies[i]);
-            creatureCompositeIn.bodies[i].collisionFilter = {category: 2, mask: 1 | 2};
-        }
-        console.log(creatureCompositeIn)
-        */
-    }
+    ground = new MyRect(400, 1300, 9999999, 100, { isStatic: true });
+    //console.log(ground);
 
-    this.myDraw = function(){
-        background(51);
-
-        ground.show();
-
-        for (let i = 0; i< creatureContainer.length; i++){
-            creatureContainer[i].show() //for each element in list render it
-            creatureContainer[i].think(); //nn things
-        }
+    tf.setBackend("cpu"); //idk
   
-        /*
-        //setTimeout(myFunction, 3000); //3000ms = 3 secs
-        if (timeLeft == 0) { //made up var, but timer will be how i go to next gen
-            nextGeneration();
-        }
-        */
-        //creatureCompositeIn.constraints[0].length += 1;
+    for(let i = 0; i < creatureNum; i++){ //32 differnt collision layers is max due to bitmask, so thats 32 different creature limit
+      creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2**i))
+      creatureContainer[i].creatureSetup();
+    }
+  //console.log(creatureContainer)
+  }
+
+  this.myDraw = function(){
+    background(51);
+    
+    //const zoom = map(mouseX, 0, width, 0.5, 2)
+    let bestX = 0;
+    for(let i = 0; i < creatureContainer.length; i++){
+      let temp = creatureContainer[i].averageX
+      if(temp > bestX && firstBestID != creatureContainer[i].McreatureID){
+        bestX = temp;
+        firstBestID = creatureContainer[i].McreatureID;
+        //console.log("new 1st place, ", firstBestID, " at ", bestX)
+      }
     }
 
-    //create object for a creature - done
-    //give creature a neural network
-    //it needs inputs, so length of muscles, positions of joints ect
-    //and outputs like target length of muscle
-    //all in runtime
-    //at end of timer the best 1 / more are chosen for the baseline neural network for the next generation
-    //repeat
-
-    //todo before this:
-    //make sure brain.js can have multiple ins and outs and is fast enough for runtime
-    //if not, find another library (maybe just do this as brain.js has no docs as far as I can see)
-
-    //Matter.Composite.scale(composite, scaleX, scaleY, point, [recursive=true]) //should be useful for later
-
-    this.myMouseClicked = function(){
-
+    const zoom = 0.6;
+    const shiftX = -bestX * zoom + width / 2; //replace with leading creature
+    //const shiftY = -creatureContainer[0].McreatureComposite.bodies[0].position.y * zoom + height / 2;
+    push()
+    translate(shiftX, 0)
+    scale(zoom)
+    background(51);
+    ground.show();
+    for (let i = 0; i< creatureContainer.length; i++){
+      creatureContainer[i].show() //for each element in list render it
+      creatureContainer[i].think(); //nn things
     }
+    pop()
+
+    textSize(32);
+    text('Generation: ' + currentGen, 0, 40);
+
+    if(!timerStarted){
+      setTimeout(nextGen, 1000); //10 secs
+      timerStarted = true;
+    }
+  }
+
+  this.myMouseClicked = function(){
+    console.log(creatureContainer)
+  }
+
+  function nextGen(){
+    //console.log('next generation');
+    currentGen += 1;
+
+    //find first, second and third best
+    findBest()
+
+    creatureContainer.splice(firstBestID, 1);
+    if (firstBestID < secondBestID){
+      creatureContainer.splice(secondBestID - 1, 1);
+    }
+    else{
+      creatureContainer.splice(secondBestID, 1);
+    }
+
+    for (let i = 0; i < creatureNum - 2; i++){
+      creatureContainer[i].dispose();
+    }
+
+    creatureContainer = [];
+
+    for (let i = 0; i < creatureNum; i++) { //half are from num 1
+      if(i < creatureNum / 2){ //half use 1st
+        creatureContainer[i] = mutateCreature(0, i);
+      }
+      else{ //half use 2nd
+        creatureContainer[i] = mutateCreature(1, i);
+      }
+      //console.log(creatureContainer, "help")
+    }
+    for (let i = 0; i < creatureNum; i++){
+      creatureContainer[i].creatureSetup();
+    }
+    timerStarted = false;
+  }
+  
+  function mutateCreature(ID, index) {
+    let child = new MyCreature(index, creatureCompositeIn, 2**index, bestCreaturesFromLast[ID].brain);
+    //child.mutate();
+    return child;
+  }
+
+  function findBest() {
+    let bestX = 0;
+    let tempArray = [];
+    for(let i = 0; i < creatureContainer.length; i++){
+      tempArray.push(creatureContainer[i].averageX);
+    }
+    //console.log(tempArray)
+
+    for(let i = 0; i < tempArray.length; i++){
+      let temp = tempArray[i]
+      if(temp > bestX){
+        bestX = temp;
+        firstBestID = i;
+      }
+    }
+    //console.log(firstBestID)
+    bestCreaturesFromLast.push(creatureContainer[firstBestID])
+
+    tempArray.splice(firstBestID, 1, 0);
+    //console.log(tempArray)
+    bestX = 0;
+    for(let i = 0; i < tempArray.length; i++){
+      let temp = tempArray[i]
+      //console.log(temp);
+      if(temp > bestX){
+        bestX = temp;
+        secondBestID = i;
+      }
+    }
+    //console.log(secondBestID)
+    bestCreaturesFromLast.push(creatureContainer[secondBestID])
+    //console.log(bestCreaturesFromLast);
+  }
 }
+
 
 /*
 function nextGeneration() {

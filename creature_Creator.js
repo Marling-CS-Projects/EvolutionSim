@@ -70,6 +70,15 @@ function creature_Creator(){
         }
 
         //console.log (mouseX, mouseY);
+
+        if(temp != null){
+            strokeWeight(10);
+            line(temp.position.x, 
+                temp.position.y, 
+                mouseX, 
+                mouseY);
+            strokeWeight(1);
+        }
     }
 
     function jointButtonDown(){
@@ -121,6 +130,9 @@ function creature_Creator(){
                     if(mConstraint.body != null){
                         if (temp == null){
                             temp = mConstraint.body;
+                        }
+                        else if (temp == mConstraint.body){
+                            temp = null;
                         }
                         else{
                             var distance = getDistance(temp.position.x, temp.position.y, mConstraint.body.position.x, mConstraint.body.position.y);
