@@ -19,7 +19,7 @@ function creature_Creator(){
         creatureComposite = new Composite.create();
 
         var canvas = createCanvas(800, 800);
-        engine = Engine.create();
+        var engine = Engine.create();
         world = engine.world;
         Matter.Runner.run(engine);
 

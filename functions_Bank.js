@@ -1,5 +1,8 @@
-function MyRect(x, y, w, h, options){ //we need to add options to this
-    this.body = Bodies.rectangle(x, y, w, h, options, composite = engine.world); //{ collisionFilter: { group: group } }
+
+'use strict';
+
+function MyRect(x, y, w, h, options, composite = engine.world){ //we need to add options to this
+    this.body = Bodies.rectangle(x, y, w, h, options, composite); //{ collisionFilter: { group: group } }
 
     /*
     collisionFilter: {

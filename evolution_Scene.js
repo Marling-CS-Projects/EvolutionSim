@@ -16,16 +16,18 @@ function evolution_Scene(creatureCompositeIn){
   let timerStarted = false;
   let currentGen = 0;
 
+  var world;
+
   this.mySetup = function() {
     var canvas = createCanvas(800, 800);
-    engine = Engine.create();
+    var engine = Engine.create();
     world = engine.world;
     Matter.Runner.run(engine);
 
     engine.gravity.scale = 0.001;
     engine.gravity.y = 1;
 
-    ground = new MyRect(400, 1300, 9999999, 100, { isStatic: true });
+    ground = new MyRect(400, 1300, 9999999, 100, { isStatic: true }, world);
     //console.log(ground);
 
     tf.setBackend("cpu"); //idk
@@ -33,8 +35,11 @@ function evolution_Scene(creatureCompositeIn){
     for(let i = 0; i < creatureNum; i++){ //32 differnt collision layers is max due to bitmask, so thats 32 different creature limit
       creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2**i))
       creatureContainer[i].creatureSetup();
+      Composite.add(world, creatureContainer[i].McreatureComposite);
     }
-  //console.log(creatureContainer)
+
+    console.log(engine)
+    console.log(creatureContainer)
   }
 
   this.myDraw = function(){
@@ -69,7 +74,7 @@ function evolution_Scene(creatureCompositeIn){
     text('Generation: ' + currentGen, 0, 40);
 
     if(!timerStarted){
-      setTimeout(nextGen, 1000); //10 secs
+      setTimeout(nextGen, 10000); //10 secs
       timerStarted = true;
     }
   }
@@ -84,7 +89,7 @@ function evolution_Scene(creatureCompositeIn){
 
     //find first, second and third best
     findBest()
-
+/* //ranstead recomendation
     creatureContainer.splice(firstBestID, 1);
     if (firstBestID < secondBestID){
       creatureContainer.splice(secondBestID - 1, 1);
@@ -98,7 +103,7 @@ function evolution_Scene(creatureCompositeIn){
     }
 
     creatureContainer = [];
-
+*/
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if(i < creatureNum / 2){ //half use 1st
         creatureContainer[i] = mutateCreature(0, i);
@@ -108,9 +113,12 @@ function evolution_Scene(creatureCompositeIn){
       }
       //console.log(creatureContainer, "help")
     }
+    Composite.clear(world, true)
     for (let i = 0; i < creatureNum; i++){
       creatureContainer[i].creatureSetup();
+      Composite.add(world, creatureContainer[i].McreatureComposite);
     }
+    console.log(world)
     timerStarted = false;
   }
   
