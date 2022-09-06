@@ -12,7 +12,6 @@ function evolution_Scene(creatureCompositeIn){
   let bestCreaturesFromLast = [];
   let firstBestID;
   let secondBestID;
-
   let timerStarted = false;
   let currentGen = 0;
 
@@ -27,11 +26,11 @@ function evolution_Scene(creatureCompositeIn){
     engine.gravity.scale = 0.001;
     engine.gravity.y = 1;
 
-    ground = new MyRect(400, 1300, 9999999, 100, { isStatic: true }, world);
+    ground = new MyRect(400, 1100, 9999999, 500, { isStatic: true }, world);
     //console.log(ground);
 
     tf.setBackend("cpu"); //idk
-  
+
     for(let i = 0; i < creatureNum; i++){ //32 differnt collision layers is max due to bitmask, so thats 32 different creature limit
       creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2**i))
       creatureContainer[i].creatureSetup();
@@ -70,8 +69,11 @@ function evolution_Scene(creatureCompositeIn){
     }
     pop()
 
+    stroke(0);
+    fill(150); 
     textSize(32);
-    text('Generation: ' + currentGen, 0, 40);
+    text('Generation: ' + currentGen, 0, 42);
+    fill(255); 
 
     if(!timerStarted){
       setTimeout(nextGen, 10000); //10 secs
@@ -89,21 +91,7 @@ function evolution_Scene(creatureCompositeIn){
 
     //find first, second and third best
     findBest()
-/* //ranstead recomendation
-    creatureContainer.splice(firstBestID, 1);
-    if (firstBestID < secondBestID){
-      creatureContainer.splice(secondBestID - 1, 1);
-    }
-    else{
-      creatureContainer.splice(secondBestID, 1);
-    }
 
-    for (let i = 0; i < creatureNum - 2; i++){
-      creatureContainer[i].dispose();
-    }
-
-    creatureContainer = [];
-*/
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if(i < creatureNum / 2){ //half use 1st
         creatureContainer[i] = mutateCreature(0, i);
@@ -124,7 +112,7 @@ function evolution_Scene(creatureCompositeIn){
   
   function mutateCreature(ID, index) {
     let child = new MyCreature(index, creatureCompositeIn, 2**index, bestCreaturesFromLast[ID].brain);
-    //child.mutate();
+    child.mutate();
     return child;
   }
 
@@ -162,42 +150,3 @@ function evolution_Scene(creatureCompositeIn){
     //console.log(bestCreaturesFromLast);
   }
 }
-
-
-/*
-function nextGeneration() {
-  console.log('next generation');
-  calculateFitness();
-  for (let i = 0; i < TOTAL; i++) {
-    birds[i] = pickOne();
-  }
-  for (let i = 0; i < TOTAL; i++) {
-    savedBirds[i].dispose();
-  }
-  savedBirds = [];
-}
-
-function pickOne() {
-  let index = 0;
-  let r = random(1);
-  while (r > 0) {
-    r = r - savedBirds[index].fitness;
-    index++;
-  }
-  index--;
-  let bird = savedBirds[index];
-  let child = new Bird(bird.brain);
-  child.mutate();
-  return child;
-}
-
-function calculateFitness() {
-  let sum = 0;
-  for (let bird of savedBirds) {
-    sum += bird.score;
-  }
-  for (let bird of savedBirds) {
-    bird.fitness = bird.score / sum;
-  }
-}
-*/

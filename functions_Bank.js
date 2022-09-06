@@ -80,7 +80,6 @@ function mouseInCanvas(x, y, canvasX, canvasY){
     }     
 }
 
-
 function getDistance(x1, y1, x2, y2){
     let y = x2 - x1;
     let x = y2 - y1;
@@ -100,10 +99,6 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //
     this.McreatureColisionLayer = McreatureColisionLayer;
     this.McreatureRenderer = McreatureRenderer;
 
-    let score = 0;
-    let fitness = 0;
-    this.score = score;
-    this.fitness = fitness;
     this.brain = brain;
     if (brain) { //if brain == null i think
         this.brain = brain.copy();
@@ -122,35 +117,40 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //
         this.brain.mutate(0.1);
     }
 
+    this.normalise = function(val, max, min) {
+      return (val - min) / (max - min); 
+    }
+
     this.think = function() {   
-        let inputs = [];
+      let inputs = [];
 
-        for(let i = 0; i < McreatureComposite.constraints.length; i++){
-            inputs[i] = McreatureComposite.constraints[i].length;
+      for(let i = 0; i < McreatureComposite.constraints.length; i++){
+        let minVal = 30;
+        if (compositeIn.constraints[i].length - 200 > 30){
+          minVal = compositeIn.constraints[i].length - 200;
         }
+        inputs[i] = this.normalise(McreatureComposite.constraints[i].length, compositeIn.constraints[i].length + 200, minVal);
+      }
 
-        let output = this.brain.predict(inputs);
+      let output = this.brain.predict(inputs);
 
-        // 0 - increase constraint [0]
-        // 1 - decrease constraint [0]
-        // 2 - increase constraint [1]
-        // 3 - decrease constraint [1]
+      // 0 - increase constraint [0] 1 - decrease constraint [0] 2 - increase constraint [1] 3 - decrease constraint [1]
 
-        const maxVal = output.indexOf(Math.max(...output));
-        
-        if(maxVal % 2 == 0) {//even
-            if(McreatureComposite.constraints[maxVal / 2].length <= compositeIn.constraints[maxVal / 2].length + 200){
-                McreatureComposite.constraints[maxVal / 2].length += 1;
-            }
-            //increaseConstraint((maxVal / 2)); //need to make this function
-        }
-        else{//odd
-            if(McreatureComposite.constraints[(maxVal - 1) / 2].length > 30 &&
-               McreatureComposite.constraints[(maxVal - 1) / 2].length >= compositeIn.constraints[(maxVal - 1) / 2].length - 200){
-                McreatureComposite.constraints[(maxVal - 1) / 2].length -= 1;
-            }
-            //decreaseConstraint(((maxVal - 1) / 2));//and this, oe merge the imaginary functions
-        }
+      const maxVal = output.indexOf(Math.max(...output));
+      
+      if(maxVal % 2 == 0) {//even
+          if(McreatureComposite.constraints[maxVal / 2].length <= compositeIn.constraints[maxVal / 2].length + 200){
+              McreatureComposite.constraints[maxVal / 2].length += 5;
+          }
+          //increaseConstraint((maxVal / 2)); //need to make this function
+      }
+      else{//odd
+          if(McreatureComposite.constraints[(maxVal - 1) / 2].length > 30 &&
+              McreatureComposite.constraints[(maxVal - 1) / 2].length >= compositeIn.constraints[(maxVal - 1) / 2].length - 200){
+              McreatureComposite.constraints[(maxVal - 1) / 2].length -= 5;
+          }
+          //decreaseConstraint(((maxVal - 1) / 2));//and this, oe merge the imaginary functions
+      }
       }
 
     this.creatureSetup = function(){
@@ -191,7 +191,6 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //
         //console.log(averageX)
     }
 }
-
 
 //https://www.youtube.com/watch?v=cdUNkwXx-I4&list=PLRqwX-V7Uu6Yd3975YwxrR0x40XGJ_KGO&index=9
 class NeuralNetwork {
@@ -278,79 +277,3 @@ class NeuralNetwork {
       return model;
     }
 }
-
-/*
-class Bird {
-    constructor(brain) {
-      this.y = height / 2;
-      this.x = 64;
-  
-      this.gravity = 0.8;
-      this.lift = -12;
-      this.velocity = 0;
-  
-      this.score = 0;
-      this.fitness = 0;
-      if (brain) {//
-        this.brain = brain.copy();
-      } else {
-        this.brain = new NeuralNetwork(5, 8, 2);
-      }
-    }
-  
-    dispose() {//
-      this.brain.dispose();
-    }
-  
-    show() { //
-      stroke(255);
-      fill(255, 100);
-      ellipse(this.x, this.y, 32, 32);
-    }
-  
-    up() {
-      this.velocity += this.lift;
-    }
-  
-    mutate() {//
-      this.brain.mutate(0.1);
-    }
-  
-    think(pipes) {
-      // Find the closest pipe
-      let closest = null;
-      let closestD = Infinity;
-      for (let i = 0; i < pipes.length; i++) {
-        let d = pipes[i].x + pipes[i].w - this.x;
-        if (d < closestD && d > 0) {
-          closest = pipes[i];
-          closestD = d;
-        }
-      }
-  
-      let inputs = [];
-      inputs[0] = this.y / height;
-      inputs[1] = closest.top / height;
-      inputs[2] = closest.bottom / height;
-      inputs[3] = closest.x / width;
-      inputs[4] = this.velocity / 10;
-      let output = this.brain.predict(inputs);
-      //if (output[0] > output[1] && this.velocity >= 0) {
-      if (output[0] > output[1]) {
-        this.up();
-      }
-    }
-  
-    offScreen() {
-      return this.y > height || this.y < 0;
-    }
-  
-    update() {
-      this.score++;
-  
-      this.velocity += this.gravity;
-      //this.velocity *= 0.9;
-      this.y += this.velocity;
-    }
-  }
-  */

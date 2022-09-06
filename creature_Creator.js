@@ -114,6 +114,7 @@ function creature_Creator(){
         muscleButton.remove();
         restartButton.remove();
         doneButton.remove();
+        Composite.clear(world, true)
         changeScene(1, creatureComposite);
     }
 
