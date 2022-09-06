@@ -99,10 +99,10 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //
     this.McreatureColisionLayer = McreatureColisionLayer;
     this.McreatureRenderer = McreatureRenderer;
 
-    this.brain = brain;
     if (brain) { //if brain == null i think
         this.brain = brain.copy();
     } else {
+      this.brain = brain;
       this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 2), (compositeIn.constraints.length * 2));
       //input: current length of constraints, output: increase / decrease constraint lengths
       //thinking now, if a creature can just extend a constaint to inf to get 1 circle as far as possable that would be borring

@@ -13,6 +13,7 @@ function evolution_Scene(creatureCompositeIn){
   let firstBestID;
   let secondBestID;
   let timerStarted = false;
+  let startingPos;
   let currentGen = 0;
 
   var world;
@@ -55,6 +56,10 @@ function evolution_Scene(creatureCompositeIn){
       }
     }
 
+    if(startingPos == null){
+      startingPos = bestX;
+    }
+
     const zoom = 0.6;
     const shiftX = -bestX * zoom + width / 2; //replace with leading creature
     //const shiftY = -creatureContainer[0].McreatureComposite.bodies[0].position.y * zoom + height / 2;
@@ -73,11 +78,13 @@ function evolution_Scene(creatureCompositeIn){
     fill(150); 
     textSize(32);
     text('Generation: ' + currentGen, 0, 42);
+    text(("Current Best Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
     fill(255); 
 
     if(!timerStarted){
       setTimeout(nextGen, 10000); //10 secs
       timerStarted = true;
+      startingPos = null;
     }
   }
 
