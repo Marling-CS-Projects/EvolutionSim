@@ -9,7 +9,7 @@ function evolution_Scene(creatureCompositeIn){
 
   let creatureContainer = [];
   const creatureNum = 32;
-  let bestCreaturesFromLast = [];
+  let bestCreaturesFromLastGen = [];
   let firstBestID;
   let secondBestID;
   let timerStarted = false;
@@ -82,7 +82,7 @@ function evolution_Scene(creatureCompositeIn){
     fill(255); 
 
     if(!timerStarted){
-      setTimeout(nextGen, 10000); //10 secs
+      setTimeout(nextGen, 3000); //10000 = 10 secs
       timerStarted = true;
       startingPos = null;
     }
@@ -96,8 +96,11 @@ function evolution_Scene(creatureCompositeIn){
     //console.log('next generation');
     currentGen += 1;
 
+    let tempCreatureContainer = creatureContainer;
     //find first, second and third best
-    findBest()
+    findBest();
+
+    creatureContainer = [];
 
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if(i < creatureNum / 2){ //half use 1st
@@ -106,9 +109,15 @@ function evolution_Scene(creatureCompositeIn){
       else{ //half use 2nd
         creatureContainer[i] = mutateCreature(1, i);
       }
-      //console.log(creatureContainer, "help")
+      bestCreaturesFromLastGen = [];
     }
-    Composite.clear(world, true)
+
+    for (let i = 0; i < creatureNum; i++) { //half are from num 1
+      tempCreatureContainer[i].dispose();
+    }
+    Composite.clear(world, true);
+
+    //creatureContainer[index].dispose(); //do this
     for (let i = 0; i < creatureNum; i++){
       creatureContainer[i].creatureSetup();
       Composite.add(world, creatureContainer[i].McreatureComposite);
@@ -118,7 +127,7 @@ function evolution_Scene(creatureCompositeIn){
   }
   
   function mutateCreature(ID, index) {
-    let child = new MyCreature(index, creatureCompositeIn, 2**index, bestCreaturesFromLast[ID].brain);
+    let child = new MyCreature(index, creatureCompositeIn, 2**index, bestCreaturesFromLastGen[ID]);
     child.mutate();
     return child;
   }
@@ -139,7 +148,7 @@ function evolution_Scene(creatureCompositeIn){
       }
     }
     //console.log(firstBestID)
-    bestCreaturesFromLast.push(creatureContainer[firstBestID])
+    bestCreaturesFromLastGen.push(creatureContainer[firstBestID].brain)
 
     tempArray.splice(firstBestID, 1, 0);
     //console.log(tempArray)
@@ -153,7 +162,7 @@ function evolution_Scene(creatureCompositeIn){
       }
     }
     //console.log(secondBestID)
-    bestCreaturesFromLast.push(creatureContainer[secondBestID])
-    //console.log(bestCreaturesFromLast);
+    bestCreaturesFromLastGen.push(creatureContainer[secondBestID].brain)
+    //console.log(bestCreaturesFromLastGen);
   }
 }

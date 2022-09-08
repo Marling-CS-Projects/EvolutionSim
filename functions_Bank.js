@@ -99,8 +99,8 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain){ //
     this.McreatureColisionLayer = McreatureColisionLayer;
     this.McreatureRenderer = McreatureRenderer;
 
-    if (brain) { //if brain == null i think
-        this.brain = brain.copy();
+    if (brain) { //if brain != null i think
+      this.brain = brain.copy();
     } else {
       this.brain = brain;
       this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 2), (compositeIn.constraints.length * 2));
