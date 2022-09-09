@@ -1,4 +1,4 @@
-function creature_Creator(){
+function creature_Creator() {
 
     var creatureRender = [];
 
@@ -15,7 +15,7 @@ function creature_Creator(){
 
     var creatureComposite;
 
-    this.mySetup = function() {
+    this.mySetup = function () {
         creatureComposite = new Composite.create();
 
         var canvas = createCanvas(800, 800);
@@ -24,9 +24,9 @@ function creature_Creator(){
         Matter.Runner.run(engine);
 
         engine.gravity.scale = 0;
-        
+
         var canvasMouse = Mouse.create(canvas.elt);
-        mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
+        mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse });
         Composite.add(world, mConstraint);
         Composite.add(world, creatureComposite); //if this is gone, the constraints dont exist
 
@@ -52,8 +52,8 @@ function creature_Creator(){
         doneButton.position(doneButton.position().x, doneButton.position().y + 90);
     }
 
-    this.myDraw = function(){
-        
+    this.myDraw = function () {
+
 
         background(51);
 
@@ -65,34 +65,34 @@ function creature_Creator(){
 
         doneButton.center('horizontal');
 
-        for (let i = 0; i< creatureRender.length; i++){
+        for (let i = 0; i < creatureRender.length; i++) {
             creatureRender[i].show() //for each element in list render it
         }
 
         //console.log (mouseX, mouseY);
 
-        if(temp != null){
+        if (temp != null) {
             strokeWeight(10);
-            line(temp.position.x, 
-                temp.position.y, 
-                mouseX, 
+            line(temp.position.x,
+                temp.position.y,
+                mouseX,
                 mouseY);
             strokeWeight(1);
         }
     }
 
-    function jointButtonDown(){
+    function jointButtonDown() {
         switchCaseX = 0;
         temp = null;
         //console.log("joint button pressed");
     }
 
-    function muscleButtonDown(){
+    function muscleButtonDown() {
         switchCaseX = 1;
         //console.log("muscle button pressed");
     }
 
-    function restartButtonDown(){
+    function restartButtonDown() {
         temp = null;
         //console.log(world);
         //console.log(creatureComposite);
@@ -103,10 +103,10 @@ function creature_Creator(){
         creatureRender = [];
         //console.log(creatureComposite);
         //console.log("restart button pressed");
-    }  
+    }
 
-    function doneButtonDown(){
-        if(creatureComposite.bodies.length <= 3 || creatureComposite.constraints.length <=3){
+    function doneButtonDown() {
+        if (creatureComposite.bodies.length <= 3 || creatureComposite.constraints.length <= 3) {
             console.log("not enough joints / muscles")
             //return; //TODO - uncomment this post testing
         }
@@ -120,26 +120,26 @@ function creature_Creator(){
 
     //Matter.Composite.scale(composite, scaleX, scaleY, point, [recursive=true]) //should be useful for later
 
-    this.myMouseClicked = function(){
-        if(mouseInCanvas(mouseX, mouseY, 800, 800)){
-            switch(switchCaseX) {
+    this.myMouseClicked = function () {
+        if (mouseInCanvas(mouseX, mouseY, 800, 800)) {
+            switch (switchCaseX) {
                 case 0:
-                    creatureRender.push(new MyCircle(mouseX, mouseY, 15, {isStatic: true}, creatureComposite));
+                    creatureRender.push(new MyCircle(mouseX, mouseY, 15, { isStatic: true }, creatureComposite));
                     //console.log(creatureRender);
                     break;
                 case 1:
-                    if(mConstraint.body != null){
-                        if (temp == null){
+                    if (mConstraint.body != null) {
+                        if (temp == null) {
                             temp = mConstraint.body;
                         }
-                        else if (temp == mConstraint.body){
+                        else if (temp == mConstraint.body) {
                             temp = null;
                         }
-                        else{
+                        else {
                             var distance = getDistance(temp.position.x, temp.position.y, mConstraint.body.position.x, mConstraint.body.position.y);
                             creatureRender.push(new MyConsraint(temp, mConstraint.body, distance, 0.1, 10, creatureComposite)); //need to have the stiffness low or it bugs out
                             //console.log(creatureComposite);
-                
+
                             temp = null;
                         }
                     }

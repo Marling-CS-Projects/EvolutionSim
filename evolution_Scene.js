@@ -1,4 +1,6 @@
-function evolution_Scene(creatureCompositeIn){
+//big change, instead of 32 new bodies for each gen, reusing the last body as another memory leak avoiding gambit
+
+function evolution_Scene(creatureCompositeIn) {
 
   //collision catagories and masks, all powers of 2, like bits
 
@@ -18,7 +20,7 @@ function evolution_Scene(creatureCompositeIn){
 
   var world;
 
-  this.mySetup = function() {
+  this.mySetup = function () {
     var canvas = createCanvas(800, 800);
     var engine = Engine.create();
     world = engine.world;
@@ -32,8 +34,8 @@ function evolution_Scene(creatureCompositeIn){
 
     tf.setBackend("cpu"); //idk
 
-    for(let i = 0; i < creatureNum; i++){ //32 differnt collision layers is max due to bitmask, so thats 32 different creature limit
-      creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2**i))
+    for (let i = 0; i < creatureNum; i++) { //32 differnt collision layers is max due to bitmask, so thats 32 different creature limit
+      creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2 ** i))
       creatureContainer[i].creatureSetup();
       Composite.add(world, creatureContainer[i].McreatureComposite);
     }
@@ -42,21 +44,21 @@ function evolution_Scene(creatureCompositeIn){
     console.log(creatureContainer)
   }
 
-  this.myDraw = function(){
+  this.myDraw = function () {
     background(51);
-    
+
     //const zoom = map(mouseX, 0, width, 0.5, 2)
     let bestX = 0;
-    for(let i = 0; i < creatureContainer.length; i++){
+    for (let i = 0; i < creatureContainer.length; i++) {
       let temp = creatureContainer[i].averageX
-      if(temp > bestX && firstBestID != creatureContainer[i].McreatureID){
+      if (temp > bestX && firstBestID != creatureContainer[i].McreatureID) {
         bestX = temp;
         firstBestID = creatureContainer[i].McreatureID;
         //console.log("new 1st place, ", firstBestID, " at ", bestX)
       }
     }
 
-    if(startingPos == null){
+    if (startingPos == null) {
       startingPos = bestX;
     }
 
@@ -68,31 +70,31 @@ function evolution_Scene(creatureCompositeIn){
     scale(zoom)
     background(51);
     ground.show();
-    for (let i = 0; i< creatureContainer.length; i++){
+    for (let i = 0; i < creatureContainer.length; i++) {
       creatureContainer[i].show() //for each element in list render it
       creatureContainer[i].think(); //nn things
     }
     pop()
 
     stroke(0);
-    fill(150); 
+    fill(150);
     textSize(32);
     text('Generation: ' + currentGen, 0, 42);
     text(("Current Best Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
-    fill(255); 
+    fill(255);
 
-    if(!timerStarted){
+    if (!timerStarted) {
       setTimeout(nextGen, 3000); //10000 = 10 secs
       timerStarted = true;
       startingPos = null;
     }
   }
 
-  this.myMouseClicked = function(){
+  this.myMouseClicked = function () {
     console.log(creatureContainer)
   }
 
-  function nextGen(){
+  function nextGen() {
     //console.log('next generation');
     currentGen += 1;
 
@@ -103,10 +105,10 @@ function evolution_Scene(creatureCompositeIn){
     creatureContainer = [];
 
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
-      if(i < creatureNum / 2){ //half use 1st
+      if (i < creatureNum / 2) { //half use 1st
         creatureContainer[i] = mutateCreature(0, i);
       }
-      else{ //half use 2nd
+      else { //half use 2nd
         creatureContainer[i] = mutateCreature(1, i);
       }
       bestCreaturesFromLastGen = [];
@@ -118,16 +120,16 @@ function evolution_Scene(creatureCompositeIn){
     Composite.clear(world, true);
 
     //creatureContainer[index].dispose(); //do this
-    for (let i = 0; i < creatureNum; i++){
+    for (let i = 0; i < creatureNum; i++) {
       creatureContainer[i].creatureSetup();
       Composite.add(world, creatureContainer[i].McreatureComposite);
     }
     console.log(world)
     timerStarted = false;
   }
-  
+
   function mutateCreature(ID, index) {
-    let child = new MyCreature(index, creatureCompositeIn, 2**index, bestCreaturesFromLastGen[ID]);
+    let child = new MyCreature(index, creatureCompositeIn, 2 ** index, bestCreaturesFromLastGen[ID]);
     child.mutate();
     return child;
   }
@@ -135,14 +137,14 @@ function evolution_Scene(creatureCompositeIn){
   function findBest() {
     let bestX = 0;
     let tempArray = [];
-    for(let i = 0; i < creatureContainer.length; i++){
+    for (let i = 0; i < creatureContainer.length; i++) {
       tempArray.push(creatureContainer[i].averageX);
     }
     //console.log(tempArray)
 
-    for(let i = 0; i < tempArray.length; i++){
+    for (let i = 0; i < tempArray.length; i++) {
       let temp = tempArray[i]
-      if(temp > bestX){
+      if (temp > bestX) {
         bestX = temp;
         firstBestID = i;
       }
@@ -153,10 +155,10 @@ function evolution_Scene(creatureCompositeIn){
     tempArray.splice(firstBestID, 1, 0);
     //console.log(tempArray)
     bestX = 0;
-    for(let i = 0; i < tempArray.length; i++){
+    for (let i = 0; i < tempArray.length; i++) {
       let temp = tempArray[i]
       //console.log(temp);
-      if(temp > bestX){
+      if (temp > bestX) {
         bestX = temp;
         secondBestID = i;
       }
