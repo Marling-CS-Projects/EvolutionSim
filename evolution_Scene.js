@@ -51,7 +51,7 @@ function evolution_Scene(creatureCompositeIn) {
     let bestX = 0;
     for (let i = 0; i < creatureContainer.length; i++) {
       let temp = creatureContainer[i].averageX
-      if (temp > bestX && firstBestID != creatureContainer[i].McreatureID) {
+      if (temp > bestX) {
         bestX = temp;
         firstBestID = creatureContainer[i].McreatureID;
         //console.log("new 1st place, ", firstBestID, " at ", bestX)
@@ -98,40 +98,37 @@ function evolution_Scene(creatureCompositeIn) {
     //console.log('next generation');
     currentGen += 1;
 
-    let tempCreatureContainer = creatureContainer;
     //find first, second and third best
     findBest();
 
-    creatureContainer = [];
+    for (let i = 0; i < creatureNum; i++) { //half are from num 1
+      //creatureContainer[i].dispose();
+      //creatureContainer[i].brain = null;
+    }
 
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if (i < creatureNum / 2) { //half use 1st
-        creatureContainer[i] = mutateCreature(0, i);
+        mutateCreature(0, i);
       }
       else { //half use 2nd
-        creatureContainer[i] = mutateCreature(1, i);
+        mutateCreature(1, i);
       }
-      bestCreaturesFromLastGen = [];
     }
 
-    for (let i = 0; i < creatureNum; i++) { //half are from num 1
-      tempCreatureContainer[i].dispose();
-    }
-    Composite.clear(world, true);
-
-    //creatureContainer[index].dispose(); //do this
     for (let i = 0; i < creatureNum; i++) {
-      creatureContainer[i].creatureSetup();
-      Composite.add(world, creatureContainer[i].McreatureComposite);
+      creatureContainer[i].creatureReset();
     }
+
     console.log(world)
+    bestCreaturesFromLastGen = [];
     timerStarted = false;
   }
 
   function mutateCreature(ID, index) {
-    let child = new MyCreature(index, creatureCompositeIn, 2 ** index, bestCreaturesFromLastGen[ID]);
-    child.mutate();
-    return child;
+    //console.log(bestCreaturesFromLastGen, "before")
+    creatureContainer[index].copy(bestCreaturesFromLastGen[ID]);
+    //console.log(bestCreaturesFromLastGen, "after")
+    creatureContainer[index].mutate();
   }
 
   function findBest() {

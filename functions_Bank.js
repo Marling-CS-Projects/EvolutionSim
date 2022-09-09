@@ -99,7 +99,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
   this.McreatureColisionLayer = McreatureColisionLayer;
   this.McreatureRenderer = McreatureRenderer;
 
-  if (brain) { //if brain != null i think
+  if (brain) { //if brain != null
     this.brain = brain.copy();
   } else {
     this.brain = brain;
@@ -107,6 +107,11 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     //input: current length of constraints, output: increase / decrease constraint lengths
     //thinking now, if a creature can just extend a constaint to inf to get 1 circle as far as possable that would be borring
     //so I think basing winner on average possisiton of points would be better
+  }
+
+  this.copy = function (newBrain) {
+    brain = newBrain;
+    this.brain = brain.copy();
   }
 
   this.dispose = function () { //memory cleanup
@@ -174,7 +179,21 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
 
       McreatureRenderer.push(new MyConsraint(tempBodyA, tempBodyB, compositeIn.constraints[i].length, compositeIn.constraints[0].stiffness, 10, McreatureComposite))
     }
-    //console.log(McreatureComposite);
+
+    this.creatureReset = function () {
+      //collision filter shount need to be reset, bodies are already in world
+      for (let i = 0; i < compositeIn.bodies.length; i++) {
+        McreatureComposite.bodies[i].position.x = compositeIn.bodies[i].position.x;
+        McreatureComposite.bodies[i].position.y = compositeIn.bodies[i].position.y;
+        
+        //reset circles pos
+      }
+      for (let i = 0; i < compositeIn.constraints.length; i++) {
+        //reset constraint length
+        McreatureComposite.constraints[i].length = compositeIn.constraints[i].length;
+      }
+
+    }
   }
 
   this.show = function () {
