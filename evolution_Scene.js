@@ -91,7 +91,8 @@ function evolution_Scene(creatureCompositeIn) {
   }
 
   this.myMouseClicked = function () {
-    console.log(creatureContainer)
+    console.log(creatureContainer, "creature container")
+    console.log(world, "world")
   }
 
   function nextGen() {
@@ -115,19 +116,14 @@ function evolution_Scene(creatureCompositeIn) {
       }
     }
 
-    for (let i = 0; i < creatureNum; i++) {
-      creatureContainer[i].creatureReset();
-    }
-
-    console.log(world)
     bestCreaturesFromLastGen = [];
     timerStarted = false;
   }
 
   function mutateCreature(ID, index) {
-    //console.log(bestCreaturesFromLastGen, "before")
+    creatureContainer[index].creatureReset();
+    creatureContainer[index].creatureSetup();
     creatureContainer[index].copy(bestCreaturesFromLastGen[ID]);
-    //console.log(bestCreaturesFromLastGen, "after")
     creatureContainer[index].mutate();
   }
 
