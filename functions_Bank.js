@@ -107,7 +107,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
   }
 
   this.copy = function (newBrain) { //needs work to work :)
-    this.brain.dispose()
+    //this.brain.dispose()
     //this.brain = newBrain;
     console.log(this.brain);
     this.brain = newBrain;
@@ -181,16 +181,17 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
       McreatureRenderer.push(new MyConsraint(tempBodyA, tempBodyB, compositeIn.constraints[i].length, compositeIn.constraints[0].stiffness, 10, McreatureComposite))
     }
 
-    this.creatureReset = function () {
-      //collision filter shount need to be reset, bodies are already in world
+    this.creatureReset = function () {//remove all the bodies to make sure 0 references exist to it
       for (let i = 0; i < compositeIn.constraints.length; i++) {
-        //World.remove(world, McreatureComposite[0]);
+        //Composite.remove(McreatureComposite, McreatureComposite.constraints[0].constr);
         Composite.remove(McreatureComposite, McreatureComposite.constraints[0]);
       }
       for (let i = 0; i < compositeIn.bodies.length; i++) {
+        //Composite.remove(McreatureComposite, McreatureComposite.bodies[0].body);
         Composite.remove(McreatureComposite, McreatureComposite.bodies[0]);
       }
       McreatureRenderer.splice(0, McreatureRenderer.length);
+      Composite.remove(world, McreatureComposite);
     }
   }
 

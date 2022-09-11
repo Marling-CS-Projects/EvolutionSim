@@ -84,18 +84,19 @@ function evolution_Scene(creatureCompositeIn) {
     fill(255);
 
     if (!timerStarted) {
-      setTimeout(nextGen, 3000); //10000 = 10 secs
+      setTimeout(nextGen, 10000); //10000 = 10 secs
       timerStarted = true;
       startingPos = null;
     }
   }
 
   this.myMouseClicked = function () {
-    console.log(creatureContainer, "creature container")
-    console.log(world, "world")
+    console.log(creatureContainer)
   }
 
   function nextGen() {
+    let tempCreatureContainer = [];
+
     //console.log('next generation');
     currentGen += 1;
 
@@ -103,28 +104,43 @@ function evolution_Scene(creatureCompositeIn) {
     findBest();
 
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
-      //creatureContainer[i].dispose();
-      //creatureContainer[i].brain = null;
-    }
-
-    for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if (i < creatureNum / 2) { //half use 1st
-        mutateCreature(0, i);
+        tempCreatureContainer[i] = mutateCreature(0, i);
       }
       else { //half use 2nd
-        mutateCreature(1, i);
+        tempCreatureContainer[i] = mutateCreature(1, i);
       }
     }
 
+    console.log(tempCreatureContainer)
+
+    for (let i = 0; i < creatureNum; i++) {
+      creatureContainer[i].creatureReset();
+      creatureContainer[i].dispose();
+    }
+
+    for (let i = 0; i < creatureNum; i++) {
+      creatureContainer[i] = tempCreatureContainer[i];
+      creatureContainer[i].creatureSetup();
+      Composite.add(world, creatureContainer[i].McreatureComposite);
+    }
+
+    console.log(world)
+    tempCreatureContainer = [];
     bestCreaturesFromLastGen = [];
     timerStarted = false;
   }
 
   function mutateCreature(ID, index) {
-    creatureContainer[index].creatureReset();
-    creatureContainer[index].creatureSetup();
+    /*
+    //console.log(bestCreaturesFromLastGen, "before")
     creatureContainer[index].copy(bestCreaturesFromLastGen[ID]);
+    //console.log(bestCreaturesFromLastGen, "after")
     creatureContainer[index].mutate();
+    */
+    let child = new MyCreature(index, creatureCompositeIn, 2**index, bestCreaturesFromLastGen[ID]);
+    child.mutate();
+    return child;
   }
 
   function findBest() {
