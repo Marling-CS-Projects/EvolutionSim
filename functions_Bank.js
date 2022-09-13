@@ -135,6 +135,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
       if (compositeIn.constraints[i].length - 200 > 30) {
         minVal = compositeIn.constraints[i].length - 200;
       }
+      //change below to https://stackoverflow.com/questions/51593409/how-to-get-range-from-0-1-based-on-two-number-range
       inputs[i] = this.normalise(McreatureComposite.constraints[i].length, compositeIn.constraints[i].length + 200, minVal);
     }
 
@@ -151,7 +152,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
       //increaseConstraint((maxVal / 2)); //need to make this function
     }
     else {//odd
-      if (McreatureComposite.constraints[(maxVal - 1) / 2].length > 30 &&
+      if (McreatureComposite.constraints[(maxVal - 1) / 2].length > 35 &&
         McreatureComposite.constraints[(maxVal - 1) / 2].length >= compositeIn.constraints[(maxVal - 1) / 2].length - 200) {
         McreatureComposite.constraints[(maxVal - 1) / 2].length -= 5;
       }
