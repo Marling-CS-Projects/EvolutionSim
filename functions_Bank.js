@@ -87,6 +87,10 @@ function getDistance(x1, y1, x2, y2) {
   return Math.sqrt(x * x + y * y);
 }
 
+function normaliseInput(value, min, max, destMin = 0, destMax = 1,) {
+  return destMin + ((value - min) / (max - min)) * (destMax - destMin);
+}
+
 function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { //this acts as one big class constructor, but with a lot less "this."
   let McreatureComposite = new Composite.create();
   let McreatureRenderer = [];
@@ -103,7 +107,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     this.brain = brain.copy();
   } else {
     this.brain = brain;
-    this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 2), (compositeIn.constraints.length * 2));
+    this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 5), (compositeIn.constraints.length)); //changed to have same outpul length as constraints amount
   }
 
   this.copy = function (newBrain) { //needs work to work :)
@@ -123,26 +127,39 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     this.brain.mutate(0.1);
   }
 
-  this.normalise = function (val, max, min) {
-    return (val - min) / (max - min);
-  }
-
   this.think = function () {
     let inputs = [];
 
     for (let i = 0; i < McreatureComposite.constraints.length; i++) {
-      let minVal = 30;
-      if (compositeIn.constraints[i].length - 200 > 30) {
+      let minVal = 35;
+      if (compositeIn.constraints[i].length - 200 > 35) {
         minVal = compositeIn.constraints[i].length - 200;
       }
       //change below to https://stackoverflow.com/questions/51593409/how-to-get-range-from-0-1-based-on-two-number-range
-      inputs[i] = this.normalise(McreatureComposite.constraints[i].length, compositeIn.constraints[i].length + 200, minVal);
+      inputs[i] = normaliseInput(McreatureComposite.constraints[i].length, compositeIn.constraints[i].length + 200, minVal);
     }
 
-    let output = this.brain.predict(inputs);
+    let outputs = this.brain.predict(inputs);
 
     // 0 - increase constraint [0] 1 - decrease constraint [0] 2 - increase constraint [1] 3 - decrease constraint [1]
 
+
+    for(let i = 0; i < outputs.length; i++){ //for each constraint, so that multiple can move at once
+      if(outputs[i] < 0.45 && McreatureComposite.constraints[i].length > 35 && McreatureComposite.constraints[i].length >= compositeIn.constraints[i].length - 200) {//0.45 <= x >= 0.55 = no movement, below is shrinking, above is growing
+        McreatureComposite.constraints[i].length -= 5 * (0.5 - outputs[i]);
+      }
+      else if (outputs [i] > 0.55 && McreatureComposite.constraints[i].length <= compositeIn.constraints[i].length + 200) {
+        McreatureComposite.constraints[i].length += 5 * (0.5 - (outputs[i] - 0.5));
+      }
+    }
+
+    //enfrorce a max length of constraints
+    for(let i = 0; i < McreatureComposite.constraints.length; i++) {
+      if(McreatureComposite.constraints[i].length > compositeIn.constraints[i].length + 200){
+        McreatureComposite.constraints[i].length = compositeIn.constraints[i].length + 200;
+      }
+    }
+    /*
     const maxVal = output.indexOf(Math.max(...output));
 
     if (maxVal % 2 == 0) {//even
@@ -157,7 +174,9 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
         McreatureComposite.constraints[(maxVal - 1) / 2].length -= 5;
       }
       //decreaseConstraint(((maxVal - 1) / 2));//and this, oe merge the imaginary functions
+      
     }
+    */
   }
 
   this.creatureSetup = function () {
@@ -276,6 +295,8 @@ class NeuralNetwork {
       const ys = this.model.predict(xs);
       const outputs = ys.dataSync();
       // console.log(outputs);
+      console.log(inputs)
+      console.log(outputs)
       return outputs;
     });
   }
@@ -290,7 +311,7 @@ class NeuralNetwork {
     model.add(hidden);
     const output = tf.layers.dense({
       units: this.output_nodes,
-      activation: 'softmax'
+      activation: 'sigmoid' //was 'softmax'
     });
     model.add(output);
     return model;
