@@ -137,7 +137,7 @@ function creature_Creator() {
                         }
                         else {
                             var distance = getDistance(temp.position.x, temp.position.y, mConstraint.body.position.x, mConstraint.body.position.y);
-                            creatureRender.push(new MyConsraint(temp, mConstraint.body, distance, 0.1, 10, creatureComposite)); //need to have the stiffness low or it bugs out
+                            creatureRender.push(new MyConsraint(temp, mConstraint.body, distance, 0.01, 10, creatureComposite)); //need to have the stiffness low or it bugs out
                             //console.log(creatureComposite);
 
                             temp = null;

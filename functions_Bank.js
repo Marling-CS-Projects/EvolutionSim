@@ -107,15 +107,15 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     this.brain = brain.copy();
   } else {
     this.brain = brain;
-    this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 5), (compositeIn.constraints.length)); //changed to have same outpul length as constraints amount
+    this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 5), (compositeIn.constraints.length)); //changed to have same output length as constraints amount
   }
 
   this.copy = function (newBrain) { //needs work to work :)
     //this.brain.dispose()
     //this.brain = newBrain;
-    console.log(this.brain);
+    //console.log(this.brain);
     this.brain = newBrain;
-    console.log(this.brain);
+    //console.log(this.brain);
     //this.brain = brain.copy();
   }
 
@@ -123,10 +123,45 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     this.brain.dispose()
   }
 
-  this.mutate = function () {
-    this.brain.mutate(0.1);
+  this.mutate = function (rate) {
+    this.brain.mutate(rate);
   }
 
+  
+  this.think = function () { //moves all at once, uses
+    let inputs = [];
+
+    for (let i = 0; i < McreatureComposite.constraints.length; i++) {
+      let minVal = 35;
+      if (compositeIn.constraints[i].length - 200 > 35) {
+        minVal = compositeIn.constraints[i].length - 200;
+      }
+      //change below to https://stackoverflow.com/questions/51593409/how-to-get-range-from-0-1-based-on-two-number-range
+      inputs[i] = normaliseInput(McreatureComposite.constraints[i].length, compositeIn.constraints[i].length + 200, minVal);
+    }
+
+    let outputs = this.brain.predict(inputs);
+
+    for(let i = 0; i < outputs.length; i++){ //for each constraint, so that multiple can move at once
+      if(outputs[i] < 0.45 && McreatureComposite.constraints[i].length > 35 && McreatureComposite.constraints[i].length >= compositeIn.constraints[i].length - 200) {//0.45 <= x >= 0.55 = no movement, below is shrinking, above is growing
+        McreatureComposite.constraints[i].length -= 2 * (0.5 - outputs[i]);
+      }
+      else if (outputs [i] > 0.55 && McreatureComposite.constraints[i].length <= compositeIn.constraints[i].length + 200) {
+        McreatureComposite.constraints[i].length += 2 * (0.5 - (outputs[i] - 0.5));
+      }
+    }
+
+    //enfrorce a max length of constraints
+    /*
+    for(let i = 0; i < McreatureComposite.constraints.length; i++) {
+      if(McreatureComposite.constraints[i].length > compositeIn.constraints[i].length + 200){
+        McreatureComposite.constraints[i].length = compositeIn.constraints[i].length + 200;
+      }
+    }   
+    */
+  }
+
+  /*
   this.think = function () {
     let inputs = [];
 
@@ -142,25 +177,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     let outputs = this.brain.predict(inputs);
 
     // 0 - increase constraint [0] 1 - decrease constraint [0] 2 - increase constraint [1] 3 - decrease constraint [1]
-
-
-    for(let i = 0; i < outputs.length; i++){ //for each constraint, so that multiple can move at once
-      if(outputs[i] < 0.45 && McreatureComposite.constraints[i].length > 35 && McreatureComposite.constraints[i].length >= compositeIn.constraints[i].length - 200) {//0.45 <= x >= 0.55 = no movement, below is shrinking, above is growing
-        McreatureComposite.constraints[i].length -= 5 * (0.5 - outputs[i]);
-      }
-      else if (outputs [i] > 0.55 && McreatureComposite.constraints[i].length <= compositeIn.constraints[i].length + 200) {
-        McreatureComposite.constraints[i].length += 5 * (0.5 - (outputs[i] - 0.5));
-      }
-    }
-
-    //enfrorce a max length of constraints
-    for(let i = 0; i < McreatureComposite.constraints.length; i++) {
-      if(McreatureComposite.constraints[i].length > compositeIn.constraints[i].length + 200){
-        McreatureComposite.constraints[i].length = compositeIn.constraints[i].length + 200;
-      }
-    }
-    /*
-    const maxVal = output.indexOf(Math.max(...output));
+    const maxVal = outputs.indexOf(Math.max(...outputs));
 
     if (maxVal % 2 == 0) {//even
       if (McreatureComposite.constraints[maxVal / 2].length <= compositeIn.constraints[maxVal / 2].length + 200) {
@@ -176,8 +193,8 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
       //decreaseConstraint(((maxVal - 1) / 2));//and this, oe merge the imaginary functions
       
     }
-    */
   }
+  */
 
   this.creatureSetup = function () {
     Composite.add(world, McreatureComposite);
@@ -295,8 +312,8 @@ class NeuralNetwork {
       const ys = this.model.predict(xs);
       const outputs = ys.dataSync();
       // console.log(outputs);
-      console.log(inputs)
-      console.log(outputs)
+      //console.log(inputs)
+      //console.log(outputs)
       return outputs;
     });
   }
@@ -311,7 +328,7 @@ class NeuralNetwork {
     model.add(hidden);
     const output = tf.layers.dense({
       units: this.output_nodes,
-      activation: 'sigmoid' //was 'softmax'
+      activation: 'sigmoid'  //'softmax' for single muscle movement, 'sigmoid' for multiple
     });
     model.add(output);
     return model;
