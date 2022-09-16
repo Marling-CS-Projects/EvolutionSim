@@ -74,30 +74,6 @@ function evolution_Scene(creatureCompositeIn) {
     push()
     translate(shiftX, 0)
     scale(zoom)
-    //background(51);
-    /*
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
-        if (j % 2 == 0) {
-          if (i % 2 == 0) {
-            fill(0);
-          }
-          else {
-            fill(255);
-          }
-        }
-        else {
-          if (i % 2 == 0) {
-            fill(255);
-          }
-          else {
-            fill(0);
-          }
-        }
-        rect(i * 40, j * 40, 35, 35);
-        console.log(i, j);
-      }
-    }*/
 
     stroke(51);
     for (let i = 0; i < 100; i++){
@@ -110,25 +86,42 @@ function evolution_Scene(creatureCompositeIn) {
       rect(-500 + (200 * i), 0, 200, 1000);
     }
 
+    stroke(0)
     fill(225)
-    stroke(0);
-
     ground.show();
+
+    fill(225, 225, 225, 70)
+    stroke(0, 0, 0, 70)
     for (let i = 0; i < creatureContainer.length; i++) {
-      creatureContainer[i].show() //for each element in list render it
-      creatureContainer[i].think(); //nn things
+      if(firstBestID != creatureContainer[i].McreatureID){
+        creatureContainer[i].show() //for each element in list render it
+        creatureContainer[i].think(); //nn things
+      }
     }
+
+    stroke(0, 0, 0, 225)
+
+    if(firstBestID != null){
+      fill(0, 225, 0, 225) //best creature lats, is drawn on top of everything else
+      creatureContainer[firstBestID].show() //for each element in list render it
+      creatureContainer[firstBestID].think(); //nn things
+    }
+
     pop()
 
     fill(150);
     textSize(32);
     text('Generation: ' + currentGen, 0, 42);
-    text(("Current Best Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
+    text(("Current Best Average X, Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
+    timeSlider = createSlider(0, 20000, 10000);
+    timeSlider.position(20, 20);
+    const time = timeSlider.value();
+    text("Length of next Generation: ", timeSlider.x * 2 + timeSlider.width, 35);
     fill(255);
     
 
     if (!timerStarted) {
-      setTimeout(nextGen, 10000); //10000 = 10 secs
+      setTimeout(nextGen, time); //10000 = 10 secs
       timerStarted = true;
       startingPos = null;
     }

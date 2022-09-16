@@ -1,4 +1,3 @@
-
 'use strict';
 
 function MyRect(x, y, w, h, options, composite = engine.world) { //we need to add options to this
@@ -51,7 +50,6 @@ function MyCircle(x, y, r, options, composite = engine.world) {
 }
 
 function MyConsraint(body1, body2, length, stiffness, thickness = 1, composite = engine.world) { //have to pass box.body into this now
-
   var constr = Constraint.create({
     bodyA: body1,
     bodyB: body2,
@@ -133,7 +131,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
 
     for (let i = 0; i < McreatureComposite.constraints.length; i++) {
       let minVal = 35;
-      if (compositeIn.constraints[i].length - 200 > 35) {
+      if (compositeIn.constraints[i].length - 200 > 40) {
         minVal = compositeIn.constraints[i].length - 200;
       }
       //change below to https://stackoverflow.com/questions/51593409/how-to-get-range-from-0-1-based-on-two-number-range
@@ -143,11 +141,11 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     let outputs = this.brain.predict(inputs);
 
     for(let i = 0; i < outputs.length; i++){ //for each constraint, so that multiple can move at once
-      if(outputs[i] < 0.45 && McreatureComposite.constraints[i].length > 35 && McreatureComposite.constraints[i].length >= compositeIn.constraints[i].length - 200) {//0.45 <= x >= 0.55 = no movement, below is shrinking, above is growing
-        McreatureComposite.constraints[i].length -= 2 * (0.5 - outputs[i]);
+      if(outputs[i] < 0.45 && McreatureComposite.constraints[i].length > 40 && McreatureComposite.constraints[i].length >= compositeIn.constraints[i].length - 200) {//0.45 <= x >= 0.55 = no movement, below is shrinking, above is growing
+        McreatureComposite.constraints[i].length -= 5 * (0.5 - outputs[i]);
       }
       else if (outputs [i] > 0.55 && McreatureComposite.constraints[i].length <= compositeIn.constraints[i].length + 200) {
-        McreatureComposite.constraints[i].length += 2 * (0.5 - (outputs[i] - 0.5));
+        McreatureComposite.constraints[i].length += 5 * (0.5 - (outputs[i] - 0.5));
       }
     }
 
