@@ -1,6 +1,6 @@
 //big change, instead of 32 new bodies for each gen, reusing the last body as another memory leak avoiding gambit
 
-function evolution_Scene(creatureCompositeIn) {
+function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   //collision catagories and masks, all powers of 2, like bits
 
@@ -10,6 +10,8 @@ function evolution_Scene(creatureCompositeIn) {
   var ground;
 
   var canvas;
+
+  const time = genLength;
 
   let creatureContainer = [];
   const creatureNum = 32;
@@ -42,6 +44,13 @@ function evolution_Scene(creatureCompositeIn) {
       Composite.add(world, creatureContainer[i].McreatureComposite);
     }
 
+    if(optionsIndex == 1){
+      //jump
+    }
+    if(optionsIndex == 2){
+      //obstacles
+    }
+
     //console.log(engine)
     //console.log(creatureContainer)
   }
@@ -68,7 +77,6 @@ function evolution_Scene(creatureCompositeIn) {
 
     const zoom = 0.6;
     const shiftX = -bestX * zoom + width / 2; //replace with leading creature
-    const negShiftX = bestX * zoom - width / 2;
     //const shiftY = -creatureContainer[0].McreatureComposite.bodies[0].position.y * zoom + height / 2;
 
     push()
@@ -113,10 +121,6 @@ function evolution_Scene(creatureCompositeIn) {
     textSize(32);
     text('Generation: ' + currentGen, 0, 42);
     text(("Current Best Average X, Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
-    timeSlider = createSlider(0, 20000, 10000);
-    timeSlider.position(20, 20);
-    const time = timeSlider.value();
-    text("Length of next Generation: ", timeSlider.x * 2 + timeSlider.width, 35);
     fill(255);
     
 
@@ -142,10 +146,10 @@ function evolution_Scene(creatureCompositeIn) {
 
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if (i <= creatureNum / 2) { //half use 1st
-        tempCreatureContainer[i] = mutateCreature(0, i, 0.05 * i);
+        tempCreatureContainer[i] = mutateCreature(0, i, 0.01 * i);
       }
       else{ //half use 2nd
-        tempCreatureContainer[i] = mutateCreature(1, i, 0.05 * (i - 16));
+        tempCreatureContainer[i] = mutateCreature(1, i, 0.01 * (i - 16));
       }
       /*
       else { // stops devolution, but the population as a whole is made worse

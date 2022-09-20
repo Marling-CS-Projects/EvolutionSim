@@ -64,14 +64,14 @@ function mouseClicked() {
   myMouseClicked(); //preferably, this would be function anyInputPressed(), but this is a start for now, this is also currently only scene switching, will change when buttons are a thing
 }
 
-function changeScene(newSceneIndex, creatureComposite = null) {
+function changeScene(newSceneIndex, creatureComposite = null, genTime = null, optionIndex = null) {
   sceneIndex = newSceneIndex;
   if (sceneIndex == 0) {
     creature_Creator();
     mySetup();
   }
   else if (sceneIndex == 1) {
-    evolution_Scene(creatureComposite);
+    evolution_Scene(creatureComposite, genTime, optionIndex);
     mySetup();
   }
 }

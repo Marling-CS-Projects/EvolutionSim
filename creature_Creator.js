@@ -7,6 +7,8 @@ function creature_Creator() {
     let restartButton;
     let doneButton;
 
+    let genTimeSlider;
+
     let switchCaseX;
 
     var mConstraint;
@@ -14,6 +16,8 @@ function creature_Creator() {
     var temp = null;
 
     var creatureComposite;
+
+    let optionsIndex;
 
     this.mySetup = function () {
         creatureComposite = new Composite.create();
@@ -50,11 +54,21 @@ function creature_Creator() {
 
         doneButton.center('horizontal');
         doneButton.position(doneButton.position().x, doneButton.position().y + 90);
+
+        genTimeSlider = createSlider(5, 20, 10, 1);
+        genTimeSlider.center('horizontal');
+        genTimeSlider.position(genTimeSlider.position().x + 200, genTimeSlider.position().y);
+
+        sel = createSelect();
+        sel.center('horizontal');
+        sel.position(sel.position().x - 200, sel.position().y);
+        sel.option('Move to right');
+        sel.option('Jump');
+        sel.option('Obstacles');
+        sel.changed(selectionEvent);
     }
 
     this.myDraw = function () {
-
-
         background(51);
 
         jointButton.center('horizontal');
@@ -64,6 +78,13 @@ function creature_Creator() {
         restartButton.center('horizontal');
 
         doneButton.center('horizontal');
+
+        genTimeSlider.center('horizontal');
+        genTimeSlider.position(genTimeSlider.position().x + 200, genTimeSlider.position().y);
+
+        sel.center('horizontal');
+        sel.position(sel.position().x - 200, sel.position().y);
+        
 
         for (let i = 0; i < creatureRender.length; i++) {
             creatureRender[i].show() //for each element in list render it
@@ -79,6 +100,27 @@ function creature_Creator() {
                 mouseY);
             strokeWeight(1);
         }
+
+        fill(150);
+        textSize(32);
+        text('Time for each generation: ' + genTimeSlider.value() + ' seconds.', 0, 42);
+        fill(255);
+    }
+
+    function selectionEvent() {
+        if (sel.value() == 'Move to right'){
+            optionsIndex = 0;
+        }
+        else if (sel.value() == 'Jump'){
+            optionsIndex = 1;
+        }
+        else if (sel.value() == 'Obstacles'){
+            optionsIndex = 2;
+        }
+
+        let item = sel.value();
+        background(200);
+        text('It is a ' + item + '!', 50, 50);
     }
 
     function jointButtonDown() {
@@ -114,8 +156,9 @@ function creature_Creator() {
         muscleButton.remove();
         restartButton.remove();
         doneButton.remove();
+        genTimeSlider.remove();
         Composite.clear(world, true)
-        changeScene(1, creatureComposite);
+        changeScene(1, creatureComposite, genTimeSlider.value() * 1000, optionsIndex);
     }
 
     //Matter.Composite.scale(composite, scaleX, scaleY, point, [recursive=true]) //should be useful for later
