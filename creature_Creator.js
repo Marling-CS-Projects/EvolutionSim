@@ -63,8 +63,8 @@ function creature_Creator() {
         sel.center('horizontal');
         sel.position(sel.position().x - 200, sel.position().y);
         sel.option('Move to right');
-        sel.option('Jump');
         sel.option('Obstacles');
+        sel.option('Jump');
         sel.changed(selectionEvent);
     }
 
@@ -111,10 +111,10 @@ function creature_Creator() {
         if (sel.value() == 'Move to right'){
             optionsIndex = 0;
         }
-        else if (sel.value() == 'Jump'){
+        else if (sel.value() == 'Obstacles'){
             optionsIndex = 1;
         }
-        else if (sel.value() == 'Obstacles'){
+        else if (sel.value() == 'Jump'){
             optionsIndex = 2;
         }
 
@@ -157,6 +157,7 @@ function creature_Creator() {
         restartButton.remove();
         doneButton.remove();
         genTimeSlider.remove();
+        sel.remove();
         Composite.clear(world, true)
         changeScene(1, creatureComposite, genTimeSlider.value() * 1000, optionsIndex);
     }

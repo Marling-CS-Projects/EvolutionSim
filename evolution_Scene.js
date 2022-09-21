@@ -60,27 +60,53 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     
     background(51);
-    //const zoom = map(mouseX, 0, width, 0.5, 2)
+
     let bestX = 0;
-    for (let i = 0; i < creatureContainer.length; i++) {
-      let temp = creatureContainer[i].averageX
-      if (temp > bestX) {
-        bestX = temp;
-        firstBestID = creatureContainer[i].McreatureID;
-        //console.log("new 1st place, ", firstBestID, " at ", bestX)
+    let bestY = 0;
+
+    if (optionsIndex != 2){
+      for (let i = 0; i < creatureContainer.length; i++) {
+        let temp = creatureContainer[i].averageX
+        if (temp > bestX) {
+          bestX = temp;
+          firstBestID = creatureContainer[i].McreatureID;
+          //console.log("new 1st place, ", firstBestID, " at ", bestX)
+        }
+      }
+    }
+    else{
+      for (let i = 0; i < creatureContainer.length; i++) {
+        let tempY = creatureContainer[i].bestAverageY;
+        if (tempY > bestY) {
+          bestY = tempY;
+          firstBestID = creatureContainer[i].McreatureID;
+        }
+
+        let tempX = creatureContainer[i].averageX
+        if (tempX > bestX) {
+          bestX = tempX;
+        }
       }
     }
 
-    if (startingPos == null) {
+    if (startingPos == null && optionsIndex != 2) {
       startingPos = bestX;
+    }
+    else if (startingPos == null){
+      startingPos = bestY
     }
 
     const zoom = 0.6;
     const shiftX = -bestX * zoom + width / 2; //replace with leading creature
-    //const shiftY = -creatureContainer[0].McreatureComposite.bodies[0].position.y * zoom + height / 2;
+    const shiftY = -bestY * zoom + width / 2;
 
     push()
-    translate(shiftX, 0)
+    if(optionsIndex != 2){
+      translate(shiftX, 0)
+    }
+    else{
+      translate(shiftX, shiftY + 100)
+    }
     scale(zoom)
 
     stroke(51);
@@ -91,7 +117,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       else {
         fill(51);
       }
-      rect(-500 + (200 * i), 0, 200, 1000);
+      rect(-500 + (200 * i), -4000, 200, 5000);
     }
 
     stroke(0)
@@ -120,7 +146,12 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     fill(150);
     textSize(32);
     text('Generation: ' + currentGen, 0, 42);
-    text(("Current Best Average X, Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
+    if(optionsIndex != 2){
+      text(("Current Best Average X, Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
+    }
+    else{
+      text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + parseInt((bestY - startingPos))), 0, 72)
+    }
     fill(255);
     
 
@@ -142,7 +173,14 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     currentGen += 1;
 
     //find first, second and third best
-    findBest();
+    findBestX();
+
+    if(optionsIndex != 2){
+      findBestX();
+    }
+    else{
+      findBestY();
+    }
 
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if (i <= creatureNum / 2) { //half use 1st
@@ -189,7 +227,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     return child;
   }
 
-  function findBest() {
+  function findBestX() {
     let bestX = 0;
     let tempArray = [];
     for (let i = 0; i < creatureContainer.length; i++) {
@@ -215,6 +253,40 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       //console.log(temp);
       if (temp > bestX) {
         bestX = temp;
+        secondBestID = i;
+      }
+    }
+    //console.log(secondBestID)
+    bestCreaturesFromLastGen.push(creatureContainer[secondBestID].brain)
+    //console.log(bestCreaturesFromLastGen);
+  }
+
+  function findBestY() {
+    let bestY = 0;
+    let tempArray = [];
+    for (let i = 0; i < creatureContainer.length; i++) {
+      tempArray.push(creatureContainer[i].averageX);
+    }
+    //console.log(tempArray)
+
+    for (let i = 0; i < tempArray.length; i++) {
+      let temp = tempArray[i]
+      if (temp > bestY) {
+        bestY = temp;
+        firstBestID = i;
+      }
+    }
+    //console.log(firstBestID)
+    bestCreaturesFromLastGen.push(creatureContainer[firstBestID].brain)
+
+    tempArray.splice(firstBestID, 1, 0);
+    //console.log(tempArray)
+    bestY = 0;
+    for (let i = 0; i < tempArray.length; i++) {
+      let temp = tempArray[i]
+      //console.log(temp);
+      if (temp > bestY) {
+        bestY = temp;
         secondBestID = i;
       }
     }

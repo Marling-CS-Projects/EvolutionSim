@@ -71,6 +71,7 @@ function changeScene(newSceneIndex, creatureComposite = null, genTime = null, op
     mySetup();
   }
   else if (sceneIndex == 1) {
+    console.log(creatureComposite, genTime, optionIndex)
     evolution_Scene(creatureComposite, genTime, optionIndex);
     mySetup();
   }

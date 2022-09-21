@@ -89,13 +89,38 @@ function normaliseInput(value, min, max, destMin = 0, destMax = 1,) {
   return destMin + ((value - min) / (max - min)) * (destMax - destMin);
 }
 
+function placeOnGround(compositeIn){ //need to test
+  //find lowest Y, lower all to ground
+  let tempY = 0;
+  let lowestY = 9999;
+  let arrayPos = -1;
+  for (let i = 0; i < compositeIn.bodies.length; i++) {
+    tempY = compositeIn.bodies[i].position.y;
+    if (tempY < lowestY){
+      lowestY = tempY;
+      arrayPos = i;
+    }
+  }
+
+  //835.2928062341791 is lowest, top corner is like 5000, 5000 so 800 would be above the ground
+  let lowerAmount = 800 - lowestY;
+
+  for (let i = 0; i < compositeIn.bodies.length; i++) {
+    compositeIn.bodies[i].position.y += lowerAmount;
+  }
+
+  return compositeIn; //returned after being dropped to 0
+}
+
 function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { //this acts as one big class constructor, but with a lot less "this."
   let McreatureComposite = new Composite.create();
   let McreatureRenderer = [];
 
   let averageX = 0;
+  let bestAverageY = 0;
 
   this.averageX = averageX;
+  this.bestAverageY = bestAverageY;
   this.McreatureID = McreatureID;
   this.McreatureComposite = McreatureComposite;
   this.McreatureColisionLayer = McreatureColisionLayer;
@@ -198,7 +223,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     Composite.add(world, McreatureComposite);
     for (let i = 0; i < compositeIn.bodies.length; i++) {
       McreatureRenderer.push(new MyCircle(compositeIn.bodies[i].position.x, compositeIn.bodies[i].position.y, compositeIn.bodies[i].circleRadius,
-        { collisionFilter: { category: McreatureColisionLayer, mask: 1 | McreatureColisionLayer } }, McreatureComposite));
+      { collisionFilter: { category: McreatureColisionLayer, mask: 1 | McreatureColisionLayer } }, McreatureComposite));
     }
     for (let i = 0; i < compositeIn.constraints.length; i++) {
       //console.log(compositeIn.constraints[i].bodyA.id, compositeIn.constraints[i].bodyB.id)
@@ -241,7 +266,18 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     }
     averageX = tempX / McreatureComposite.bodies.length;
     this.averageX = averageX;
-    //console.log(averageX)
+
+    //calculate best y
+    let tempY = 0;
+    for (let i = 0; i < McreatureComposite.bodies.length; i++) {
+      tempY += McreatureComposite.bodies[i].position.y;
+    }
+    let tempBestAverageY = tempY / McreatureComposite.bodies.length;
+
+    if (bestAverageY < tempBestAverageY){
+      bestAverageY = tempBestAverageY;
+    }
+    this.bestAverageY = bestAverageY;
   }
 }
 
