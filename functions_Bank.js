@@ -89,14 +89,14 @@ function normaliseInput(value, min, max, destMin = 0, destMax = 1,) {
   return destMin + ((value - min) / (max - min)) * (destMax - destMin);
 }
 
-function placeOnGround(compositeIn){ //need to test
+function placeOnGround(compositeIn){ //remeber, the y coords are 800 at the top left corner and 0 at the bottom
   //find lowest Y, lower all to ground
   let tempY = 0;
-  let lowestY = 9999;
+  let lowestY = -9999;
   let arrayPos = -1;
   for (let i = 0; i < compositeIn.bodies.length; i++) {
     tempY = compositeIn.bodies[i].position.y;
-    if (tempY < lowestY){
+    if (tempY > lowestY){
       lowestY = tempY;
       arrayPos = i;
     }
@@ -117,10 +117,10 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
   let McreatureRenderer = [];
 
   let averageX = 0;
-  let bestAverageY = 0;
+  let bestY;
 
   this.averageX = averageX;
-  this.bestAverageY = bestAverageY;
+  this.bestY = bestY;
   this.McreatureID = McreatureID;
   this.McreatureComposite = McreatureComposite;
   this.McreatureColisionLayer = McreatureColisionLayer;
@@ -269,15 +269,16 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
 
     //calculate best y
     let tempY = 0;
+    let bestY = 9999;
     for (let i = 0; i < McreatureComposite.bodies.length; i++) {
-      tempY += McreatureComposite.bodies[i].position.y;
-    }
-    let tempBestAverageY = tempY / McreatureComposite.bodies.length;
+      tempY = McreatureComposite.bodies[i].position.y;
 
-    if (bestAverageY < tempBestAverageY){
-      bestAverageY = tempBestAverageY;
+      if (bestY > tempY){
+        bestY = McreatureComposite.bodies[i].position.y;
+      }
     }
-    this.bestAverageY = bestAverageY;
+
+    this.bestY = bestY;
   }
 }
 

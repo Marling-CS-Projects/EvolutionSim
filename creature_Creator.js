@@ -159,6 +159,7 @@ function creature_Creator() {
         genTimeSlider.remove();
         sel.remove();
         Composite.clear(world, true)
+        creatureComposite = placeOnGround(creatureComposite);
         changeScene(1, creatureComposite, genTimeSlider.value() * 1000, optionsIndex);
     }
 

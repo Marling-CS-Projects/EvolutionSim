@@ -16,11 +16,13 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
   let creatureContainer = [];
   const creatureNum = 32;
   let bestCreaturesFromLastGen = [];
-  let firstBestID;
+  let firstBestID = 0;
   let secondBestID;
   let timerStarted = false;
   let startingPos;
   let currentGen = 0;
+
+  let bestY = 999999999;
 
   var world;
 
@@ -62,7 +64,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     background(51);
 
     let bestX = 0;
-    let bestY = 0;
 
     if (optionsIndex != 2){
       for (let i = 0; i < creatureContainer.length; i++) {
@@ -76,16 +77,12 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     }
     else{
       for (let i = 0; i < creatureContainer.length; i++) {
-        let tempY = creatureContainer[i].bestAverageY;
-        if (tempY > bestY) {
+        let tempY = creatureContainer[i].bestY;
+        if (tempY < bestY) {
           bestY = tempY;
           firstBestID = creatureContainer[i].McreatureID;
         }
-
-        let tempX = creatureContainer[i].averageX
-        if (tempX > bestX) {
-          bestX = tempX;
-        }
+        bestX = creatureContainer[firstBestID].averageX;
       }
     }
 
@@ -141,6 +138,14 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       creatureContainer[firstBestID].think(); //nn things
     }
 
+    if(optionsIndex == 2){
+      translate(-shiftX, 0)
+      strokeWeight(5);
+      stroke(0, 100, 0, 225)
+      line(-999, bestY, 5000, bestY)
+      strokeWeight(1);
+      stroke(0, 0, 0, 225)
+    }
     pop()
 
     fill(150);
@@ -150,8 +155,9 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       text(("Current Best Average X, Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
     }
     else{
-      text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + parseInt((bestY - startingPos))), 0, 72)
+      text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + parseInt((bestY - startingPos)) * -1), 0, 72)
     }
+
     fill(255);
     
 
@@ -212,6 +218,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     //console.log(world)
     tempCreatureContainer = [];
     bestCreaturesFromLastGen = [];
+    bestY = 999999999;
     timerStarted = false;
   }
 
