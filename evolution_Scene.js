@@ -9,6 +9,8 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   var ground;
 
+  var obstacleContainer = [];
+
   var canvas;
 
   const time = genLength;
@@ -36,6 +38,13 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     engine.gravity.y = 1;
 
     ground = new MyRect(400, 1100, 9999999, 500, { isStatic: true }, world);
+
+    if (optionsIndex == 1){
+      for (let i = 0; i < 5; i++){
+        var obstacle = new MyRect(900 + (500 * i), 1100, 100, 800, { isStatic: true }, world); //x, y, w, h
+        obstacleContainer.push(obstacle);
+      }
+    }
     //console.log(ground);
 
     tf.setBackend("cpu"); //idk
@@ -45,22 +54,9 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       creatureContainer[i].creatureSetup();
       Composite.add(world, creatureContainer[i].McreatureComposite);
     }
-
-    if(optionsIndex == 1){
-      //jump
-    }
-    if(optionsIndex == 2){
-      //obstacles
-    }
-
-    //console.log(engine)
-    //console.log(creatureContainer)
   }
 
   this.myDraw = function () {
-    //background(51);
-
-    
     background(51);
 
     let bestX = 0;
@@ -119,6 +115,13 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     stroke(0)
     fill(225)
+
+    if (optionsIndex == 1){
+      for (let i = 0; i< obstacleContainer.length; i++){
+        obstacleContainer[i].show() //for each element in list render it
+      }
+    }
+    
     ground.show();
 
     fill(225, 225, 225, 70)
