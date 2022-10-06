@@ -150,7 +150,7 @@ function creature_Creator() {
     function doneButtonDown() {
         if (creatureComposite.bodies.length <= 3 || creatureComposite.constraints.length <= 3) {
             console.log("not enough joints / muscles")
-            //return; //TODO - uncomment this post testing
+            return; //TODO - uncomment this post testing
         }
         jointButton.remove();
         muscleButton.remove();
