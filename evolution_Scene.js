@@ -24,6 +24,10 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
   let startingPos;
   let currentGen = 0;
 
+  let timerInterval
+  let timeCount = time / 1000;
+  let timerStartedCount = false
+
   let bestY = 999999999;
 
   var world;
@@ -161,6 +165,8 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + parseInt((bestY - startingPos)) * -1), 0, 72)
     }
 
+    text(("Time: " + timeCount), 0, 102)
+
     fill(255);
     
 
@@ -168,7 +174,24 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       setTimeout(nextGen, time); //10000 = 10 secs
       timerStarted = true;
       startingPos = null;
+
+      clearInterval(timerInterval);
+      timerStartedCount = false;
+      timeCount = time / 1000
     }
+
+    if(!timerStartedCount){
+      timerInterval = setInterval(setTime, 1000);
+      timerStartedCount = true
+    }
+  }
+
+  function setTime()
+  {
+      --timeCount;
+      console.log(timeCount)
+      clearInterval(timerInterval);
+      timerStartedCount = false;
   }
 
   this.myMouseClicked = function () {
