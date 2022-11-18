@@ -10,7 +10,7 @@ var Engine = Matter.Engine, //this is to cut down on typing
     Mouse = Matter.Mouse,
     MouseConstraint = Matter.MouseConstraint;
 
-/*
+
 function matter_and_p5_test(){
   const catDefault = 1, //needs to be encoded like bits, only powers of 2 like in binary, bit field
   cat1 = 2,
@@ -75,7 +75,6 @@ function matter_and_p5_test(){
     myObjects.push(new MyCircle(mouseX, mouseY, 10, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
   }
 */
-/*
   this.myDraw = function() {
     //translate(20, -20); //messes up mouse pos
 
@@ -96,76 +95,6 @@ function matter_and_p5_test(){
 
   this.myMouseClicked = function(){
     myObjects.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} }))
-  }
-}
-*/
-
-function matter_and_p5_test(){
-  const catDefault = 1, //needs to be encoded like bits, only powers of 2 like in binary, bit field
-  cat1 = 2,
-  cat2 = 4,
-  cat3 = 8;
-
-
-  // create an engine
-  var myObjects = [];
-
-  var ground;
-
-  var connectedBoxes = [];
-  var boxConst;
-
-  var mConstraint;
-
-  this.mySetup = function() {
-    //var engine; dont declare the vars here, causes error?
-    //var world;
-
-    console.log(catDefault, cat1, cat2, cat3);
-
-    var canvas = createCanvas(400, 400);
-    engine = Engine.create();
-    world = engine.world;
-    Matter.Runner.run(engine);
-    //    setInterval(function() { Engine.update(engine, 1000 / 60); }, 1000 / 60);
-    //setInterval(function() { Engine.update(engine, 1 / 60); }, 1 / 60);
-
-    ground = new MyRect(200, 390, 400, 20, { isStatic: true });
-
-    var box1 = new MyRect(100, 0, 40, 40, {collisionFilter: {category: cat1, mask: catDefault | cat1} });
-    var box2 = new MyRect(150, 0, 30, 30, {collisionFilter: {category: cat2, mask: catDefault | cat2} });
-
-    myObjects.push(box1);
-    myObjects.push(box2);
-
-
-    var canvasMouse = Mouse.create(canvas.elt);
-    mConstraint = MouseConstraint.create(engine, { mouse: canvasMouse});
-    World.add(engine.world, mConstraint);
-
-  }
-
-/*
-  function mouseDragged(){
-    myObjects.push(new MyRect(mouseX, mouseY, 15, 15, { collisionFilter: {category: cat1, mask: catDefault | cat1} }))
-  }
-
-  function mouseClicked(){
-    myObjects.push(new MyCircle(mouseX, mouseY, 10, { collisionFilter: {category: cat2, mask: catDefault | cat2} }))
-  }
-*/
-
-  this.myDraw = function() {
-    //translate(20, -20); //messes up mouse pos
-
-
-    background(51);
-
-    ground.show();
-
-    for (let i = 0; i< myObjects.length; i++){
-      myObjects[i].show() //for each element in list render it
-    }
   }
 }
 
