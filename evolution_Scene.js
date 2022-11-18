@@ -26,11 +26,16 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   let bestY = 999999999;
 
+  let timer
+  let timestamp
+
   var world;
 
   this.mySetup = function () {
     canvas = createCanvas(800, 800);
     var engine = Engine.create();
+    setInterval(function() { Engine.update(engine, 1000 / 60); }, 1000 / 60);
+    //engine.timing.timeScale = 0.1;
     world = engine.world;
     Matter.Runner.run(engine);
 
@@ -165,10 +170,29 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     
 
     if (!timerStarted) {
-      setTimeout(nextGen, time); //10000 = 10 secs
+      timer = setTimeout(nextGen, time); //10000 = 10 secs
+      timeStamp = Date.now() // with Date.now method you can get the timestamp
       timerStarted = true;
       startingPos = null;
     }
+
+    // first you can save a timeStamp when you create the timeout
+    let timerTime = 3600 * 1000 // you can save the timer time on a variable
+    const timer = setTimeout(() => {
+      // do something in future please
+    }, timerTime)
+
+    // after that you can do somenthing like this
+    const  getTimeLeft = (timerTime, timeStamp) => {
+      const timeLeft = Math.ceil( (timerTime - (Date.now() - timeStamp)) / 360000)
+      return timeLeft
+    }
+    text('Time: ' + getTimeLeft(time, timeStamp))
+    //Math.ceil round float
+    //with Date.now -  timeStamp you can calculate how many time has passed since you started the timer until now
+    //and if you minus that to your timer duration you can obtain how many time is left to the timer to end
+    //and 60000 is the conversion value to transform it to minutes
+    //360000 for seconds?
   }
 
   this.myMouseClicked = function () {
