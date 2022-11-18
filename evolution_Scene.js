@@ -26,15 +26,16 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   let bestY = 999999999;
 
-  let timer
-  let timestamp
+  let timeCount = time / 1000;
+  let timerInterval
+  let timerStartedCount = false
 
   var world;
 
   this.mySetup = function () {
     canvas = createCanvas(800, 800);
     var engine = Engine.create();
-    setInterval(function() { Engine.update(engine, 1000 / 60); }, 1000 / 60);
+    //setInterval(function() { Engine.update(engine, 1000 / 60); }, 1000 / 60);
     //engine.timing.timeScale = 0.1;
     world = engine.world;
     Matter.Runner.run(engine);
@@ -166,33 +167,56 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + parseInt((bestY - startingPos)) * -1), 0, 72)
     }
 
+    text(("Time: " + timeCount), 0, 102)
+
     fill(255);
     
 
     if (!timerStarted) {
-      timer = setTimeout(nextGen, time); //10000 = 10 secs
-      timeStamp = Date.now() // with Date.now method you can get the timestamp
+      setTimeout(nextGen, time); //10000 = 10 secs
       timerStarted = true;
       startingPos = null;
+
+      clearInterval(timerInterval);
+      timerStartedCount = false;
+      timeCount = time / 1000
     }
 
-    // first you can save a timeStamp when you create the timeout
-    let timerTime = 3600 * 1000 // you can save the timer time on a variable
-    const timer = setTimeout(() => {
-      // do something in future please
-    }, timerTime)
+    //var minutesLabel = document.getElementById("minutes");
+    //var secondsLabel = document.getElementById("seconds");
+    //var totalSeconds = 0;
 
-    // after that you can do somenthing like this
-    const  getTimeLeft = (timerTime, timeStamp) => {
-      const timeLeft = Math.ceil( (timerTime - (Date.now() - timeStamp)) / 360000)
-      return timeLeft
+    //if(timerInterval != null){
+    //  clearInterval(timerInterval);
+    //}
+    if(!timerStartedCount){
+      timerInterval = setInterval(setTime, 1000);
+      timerStartedCount = true
     }
-    text('Time: ' + getTimeLeft(time, timeStamp))
-    //Math.ceil round float
-    //with Date.now -  timeStamp you can calculate how many time has passed since you started the timer until now
-    //and if you minus that to your timer duration you can obtain how many time is left to the timer to end
-    //and 60000 is the conversion value to transform it to minutes
-    //360000 for seconds?
+  }
+
+  function setTime()
+  {
+      --timeCount;
+      //text('Time: ' + pad(parseInt(timeCount/60)) + ':' + pad(timeCount%60))
+      console.log(timeCount)
+      clearInterval(timerInterval);
+      timerStartedCount = false;
+      //secondsLabel.innerHTML = pad(totalSeconds%60);
+      //minutesLabel.innerHTML = pad(parseInt(totalSeconds/60));
+  }
+
+  function pad(val)
+  {
+    var valString = val + "";
+    if(valString.length < 2)
+    {
+      return "0" + valString;
+    }
+    else
+    {
+      return valString;
+    }
   }
 
   this.myMouseClicked = function () {
