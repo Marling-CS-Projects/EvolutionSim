@@ -151,7 +151,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
   }
 
   
-  this.think = function () { //moves all at once, uses
+  this.think = function (timeScale = 1) { //moves all at once, uses
     let inputs = [];
 
     for (let i = 0; i < McreatureComposite.constraints.length; i++) {
@@ -167,10 +167,10 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
 
     for(let i = 0; i < outputs.length; i++){ //for each constraint, so that multiple can move at once
       if(outputs[i] < 0.45 && McreatureComposite.constraints[i].length > 40 && McreatureComposite.constraints[i].length >= compositeIn.constraints[i].length - 200) {//0.45 <= x >= 0.55 = no movement, below is shrinking, above is growing
-        McreatureComposite.constraints[i].length -= 5 * (0.5 - outputs[i]);
+        McreatureComposite.constraints[i].length -= 5 * (0.5 - outputs[i]) * timeScale;
       }
       else if (outputs [i] > 0.55 && McreatureComposite.constraints[i].length <= compositeIn.constraints[i].length + 200) {
-        McreatureComposite.constraints[i].length += 5 * (0.5 - (outputs[i] - 0.5));
+        McreatureComposite.constraints[i].length += 5 * (0.5 - (outputs[i] - 0.5)) * timeScale;
       }
     }
 

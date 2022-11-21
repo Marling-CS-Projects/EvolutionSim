@@ -32,9 +32,15 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   var world;
 
+  var engine
+
   this.mySetup = function () {
     canvas = createCanvas(800, 800);
-    var engine = Engine.create();
+    engine = Engine.create();
+
+    //setInterval(function() { Engine.update(engine, 1000 / 60); }, 1000 / 60);
+    //engine.timing.timeScale = 0;
+
     world = engine.world;
     Matter.Runner.run(engine);
 
@@ -42,6 +48,10 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     engine.gravity.y = 1;
 
     ground = new MyRect(400, 1100, 9999999, 500, { isStatic: true }, world);
+
+    timeScaleSlider = createSlider(0, 5, 1, 0.1); //need this between 0 and 1.3 with default 1
+    timeScaleSlider.center('horizontal');
+    timeScaleSlider.position(timeScaleSlider.position().x + 200, timeScaleSlider.position().y);
 
     if (optionsIndex == 1){
       for (let i = 0; i < 5; i++){
@@ -62,6 +72,11 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   this.myDraw = function () {
     background(51);
+
+    timeScaleSlider.center('horizontal');
+    timeScaleSlider.position(timeScaleSlider.position().x + 200, timeScaleSlider.position().y);
+
+    engine.timing.timeScale = timeScaleSlider.value()
 
     let bestX = 0;
 
@@ -133,7 +148,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     for (let i = 0; i < creatureContainer.length; i++) {
       if(firstBestID != creatureContainer[i].McreatureID){
         creatureContainer[i].show() //for each element in list render it
-        creatureContainer[i].think(); //nn things
+        creatureContainer[i].think(timeScaleSlider.value()); //nn things
       }
     }
 
@@ -142,7 +157,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     if(firstBestID != null){
       fill(0, 225, 0, 225) //best creature lats, is drawn on top of everything else
       creatureContainer[firstBestID].show() //for each element in list render it
-      creatureContainer[firstBestID].think(); //nn things
+      creatureContainer[firstBestID].think(timeScaleSlider.value()); //nn things
     }
 
     if(optionsIndex == 2){
@@ -166,13 +181,14 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     }
 
     text(("Time: " + timeCount), 0, 102)
+    text(("Time scale: " + timeScaleSlider.value()), 0, 132)
 
     fill(255);
     
 
-    if (!timerStarted) {
-      setTimeout(nextGen, time); //10000 = 10 secs
-      timerStarted = true;
+    if (timeCount <= 0) {
+      //setTimeout(nextGen, time); //10000 = 10 secs
+      nextGen()
       startingPos = null;
 
       clearInterval(timerInterval);
@@ -180,18 +196,17 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       timeCount = time / 1000
     }
 
-    if(!timerStartedCount){
-      timerInterval = setInterval(setTime, 1000);
-      timerStartedCount = true
-    }
+    timerInterval = setInterval(setTime, 100 / timeScaleSlider.value());
+    clearInterval(timerInterval);
+    //timerStartedCount = true
   }
 
   function setTime()
   {
-      --timeCount;
-      console.log(timeCount)
-      clearInterval(timerInterval);
-      timerStartedCount = false;
+    timeCount -= 0.1;
+    console.log(timeCount)
+    clearInterval(timerInterval);
+    timerStartedCount = false;
   }
 
   this.myMouseClicked = function () {
@@ -245,7 +260,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     tempCreatureContainer = [];
     bestCreaturesFromLastGen = [];
     bestY = 999999999;
-    timerStarted = false;
+    //timerStarted = false;
   }
 
   function mutateCreature(ID, index, rate) {
