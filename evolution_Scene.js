@@ -30,9 +30,13 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   let bestY = 999999999;
 
+  let currentTimeScale = 1;
+
   var world;
 
   var engine
+
+  var timeScaleSlider;
 
   this.mySetup = function () {
     canvas = createCanvas(800, 800);
@@ -49,9 +53,8 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     ground = new MyRect(400, 1100, 9999999, 500, { isStatic: true }, world);
 
-    timeScaleSlider = createSlider(0, 5, 1, 0.1); //need this between 0 and 1.3 with default 1
+    timeScaleSlider = createSlider(0.1, 1.3, 1, 0.1); //need this between 0.1 (to stop div by 0 issues) and 1.3 (any faster fcks with matter) with default 1
     timeScaleSlider.center('horizontal');
-    timeScaleSlider.position(timeScaleSlider.position().x + 200, timeScaleSlider.position().y);
 
     if (optionsIndex == 1){
       for (let i = 0; i < 5; i++){
@@ -74,9 +77,8 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     background(51);
 
     timeScaleSlider.center('horizontal');
-    timeScaleSlider.position(timeScaleSlider.position().x + 200, timeScaleSlider.position().y);
 
-    engine.timing.timeScale = timeScaleSlider.value()
+    engine.timing.timeScale = currentTimeScale;
 
     let bestX = 0;
 
@@ -148,7 +150,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     for (let i = 0; i < creatureContainer.length; i++) {
       if(firstBestID != creatureContainer[i].McreatureID){
         creatureContainer[i].show() //for each element in list render it
-        creatureContainer[i].think(timeScaleSlider.value()); //nn things
+        creatureContainer[i].think(currentTimeScale); //nn things
       }
     }
 
@@ -157,7 +159,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     if(firstBestID != null){
       fill(0, 225, 0, 225) //best creature lats, is drawn on top of everything else
       creatureContainer[firstBestID].show() //for each element in list render it
-      creatureContainer[firstBestID].think(timeScaleSlider.value()); //nn things
+      creatureContainer[firstBestID].think(currentTimeScale); //nn things
     }
 
     if(optionsIndex == 2){
@@ -177,11 +179,13 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       text(("Current Best Average X, Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
     }
     else{
-      text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + parseInt((bestY - startingPos)) * -1), 0, 72)
+      let num = (parseInt((bestY - startingPos)) * -1) - 999999150
+      text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + num), 0, 72)
     }
 
-    text(("Time: " + timeCount), 0, 102)
-    text(("Time scale: " + timeScaleSlider.value()), 0, 132)
+    text(("Time: " + (timeCount).toFixed(1)), 0, 102)
+    text(("Current Time Scale: " + currentTimeScale), 0, 132)
+    text(("Next Gen Time Scale: " + timeScaleSlider.value()), 0, 162)
 
     fill(255);
     
@@ -196,22 +200,27 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       timeCount = time / 1000
     }
 
-    timerInterval = setInterval(setTime, 100 / timeScaleSlider.value());
-    clearInterval(timerInterval);
+    if(!timerStartedCount){
+      timerInterval = setInterval(setTime, (100 / currentTimeScale));
+      timerStartedCount = true;
+    }
+    //clearInterval(timerInterval);
     //timerStartedCount = true
   }
 
   function setTime()
   {
     timeCount -= 0.1;
-    console.log(timeCount)
+    //console.log(timeCount)
     clearInterval(timerInterval);
     timerStartedCount = false;
   }
 
+  /*
   this.myMouseClicked = function () {
     console.log(creatureContainer)
   }
+*/
 
   function nextGen() {
     let tempCreatureContainer = [];
@@ -260,6 +269,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     tempCreatureContainer = [];
     bestCreaturesFromLastGen = [];
     bestY = 999999999;
+    currentTimeScale = timeScaleSlider.value();
     //timerStarted = false;
   }
 
