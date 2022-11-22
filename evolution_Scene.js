@@ -201,13 +201,15 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     text('Generation: ' + currentGen, 0, 42);
     if(optionsIndex != 2){
       text(("Current Best Average X, Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
+      text(("Viewing Creature " + (creatureSelectedID + 1) + ", Average X at: " + parseInt(creatureContainer[creatureSelectedID].averageX)), 0, 102)
     }
     else{
       let num = (parseInt((bestY - startingPos)) * -1) - 999999150
       text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + num), 0, 72)
+      let num2 = (parseInt((creatureContainer[creatureSelectedID].bestY - startingPos)) * -1) - 999999150
+      text(("Viewing Creature " + (creatureSelectedID + 1) + ", Current Peak Y at: " + num2), 0, 102)
     }
 
-    text(("Viewing Creature " + (creatureSelectedID + 1)), 0, 102)
     text(("Time: " + (timeCount).toFixed(1)), 0, 132)
     text(("Current Time Scale: " + currentTimeScale), 0, 162)
     text(("Next Gen Time Scale: " + timeScaleSlider.value()), 0, 192)
