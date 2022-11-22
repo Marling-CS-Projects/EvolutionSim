@@ -32,6 +32,10 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   let currentTimeScale = 1;
 
+
+  let previousCreatureButton
+  let creatureSelectedID = 0;
+
   var world;
 
   var engine
@@ -56,6 +60,18 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     timeScaleSlider = createSlider(0.1, 1.3, 1, 0.1); //need this between 0.1 (to stop div by 0 issues) and 1.3 (any faster fcks with matter) with default 1
     timeScaleSlider.center('horizontal');
 
+    nextCreatureButton = createButton('View Next Creature');
+    nextCreatureButton.mousePressed(nextCreatureButtonDown);
+
+    nextCreatureButton.center('horizontal');
+    nextCreatureButton.position(nextCreatureButton.position().x, nextCreatureButton.position().y + 20);
+
+    previousCreatureButton = createButton('View Previous Creature');
+    previousCreatureButton.mousePressed(previousCreatureButtonDown);
+
+    previousCreatureButton.position(previousCreatureButton.position().x, previousCreatureButton.position().y + 50);
+    previousCreatureButton.center('horizontal');
+
     if (optionsIndex == 1){
       for (let i = 0; i < 5; i++){
         var obstacle = new MyRect(900 + (500 * i), 1100, 100, 800, { isStatic: true }, world); //x, y, w, h
@@ -77,6 +93,9 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     background(51);
 
     timeScaleSlider.center('horizontal');
+
+    previousCreatureButton.center('horizontal');
+    nextCreatureButton.center('horizontal');
 
     engine.timing.timeScale = currentTimeScale;
 
@@ -148,7 +167,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     fill(225, 225, 225, 70)
     stroke(0, 0, 0, 70)
     for (let i = 0; i < creatureContainer.length; i++) {
-      if(firstBestID != creatureContainer[i].McreatureID){
+      if(firstBestID != creatureContainer[i].McreatureID || creatureSelectedID != creatureContainer[i].McreatureID){
         creatureContainer[i].show() //for each element in list render it
         creatureContainer[i].think(currentTimeScale); //nn things
       }
@@ -156,8 +175,13 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     stroke(0, 0, 0, 225)
 
-    if(firstBestID != null){
-      fill(0, 225, 0, 225) //best creature lats, is drawn on top of everything else
+    
+    fill(0, 0, 225, 225)
+    creatureContainer[creatureSelectedID].show()
+    creatureContainer[creatureSelectedID].think(currentTimeScale);
+
+    if(firstBestID != null && firstBestID != creatureSelectedID){
+      fill(0, 225, 0, 225) //best creature last, is drawn on top of everything else
       creatureContainer[firstBestID].show() //for each element in list render it
       creatureContainer[firstBestID].think(currentTimeScale); //nn things
     }
@@ -183,9 +207,10 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + num), 0, 72)
     }
 
-    text(("Time: " + (timeCount).toFixed(1)), 0, 102)
-    text(("Current Time Scale: " + currentTimeScale), 0, 132)
-    text(("Next Gen Time Scale: " + timeScaleSlider.value()), 0, 162)
+    text(("Viewing Creature " + (creatureSelectedID + 1)), 0, 102)
+    text(("Time: " + (timeCount).toFixed(1)), 0, 132)
+    text(("Current Time Scale: " + currentTimeScale), 0, 162)
+    text(("Next Gen Time Scale: " + timeScaleSlider.value()), 0, 192)
 
     fill(255);
     
@@ -351,5 +376,23 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     //console.log(secondBestID)
     bestCreaturesFromLastGen.push(creatureContainer[secondBestID].brain)
     //console.log(bestCreaturesFromLastGen);
+  }
+
+  function previousCreatureButtonDown() {
+    if (creatureSelectedID == 0){
+      creatureSelectedID = 31
+    }
+    else{
+      creatureSelectedID--
+    }
+  }
+
+  function nextCreatureButtonDown() {
+    if (creatureSelectedID == 31){
+      creatureSelectedID = 0
+    }
+    else{
+      creatureSelectedID++
+    }
   }
 }
