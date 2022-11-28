@@ -19,7 +19,7 @@ function creature_Creator() {
 
     let optionsIndex;
 
-    this.mySetup = function () {z
+    this.mySetup = function () {
         creatureComposite = new Composite.create();
 
         var canvas = createCanvas(800, 800);

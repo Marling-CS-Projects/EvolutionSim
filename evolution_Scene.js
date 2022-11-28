@@ -38,12 +38,26 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   let proxyCreatureContainer = [];
 
+  let h5;
+
+  let leaderboard = [];
+
   this.mySetup = function () {
-    let h5 = createElement('h5', '1st <br> 2nd <br> 3rd <br> 4th <br> 5th <br> 6th <br> 7th <br> 8th <br> 9th <br> 10th');
+    /*
+    h5 = createElement('h5', '1st <br> 2nd <br> 3rd <br> 4th <br> 5th <br> 6th <br> 7th <br> 8th <br> 9th <br> 10th');
     h5.style('color', '#000000');
     h5.center('vertical')
     h5.center('horizontal')
     h5.position(h5.position().x + 460, h5.position().y - 350);
+    */
+    for (let i = 0; i < creatureNum; i++){
+      leaderboard.push(createElement('h5', (i + 1) + "aaaaaaaaaaaaaa"))
+      leaderboard[i].style('color', '#000000');
+      leaderboard[i].center('vertical')
+      leaderboard[i].center('horizontal')
+      leaderboard[i].style('text-align', 'left');
+      leaderboard[i].position(leaderboard[i].position().x + 510, leaderboard[i].position().y - (390 - 20 * i))
+    }
 
     canvas = createCanvas(800, 800);
     engine = Engine.create();
@@ -68,8 +82,8 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     previousCreatureButton = createButton('View Previous Creature');
     previousCreatureButton.mousePressed(previousCreatureButtonDown);
 
-    previousCreatureButton.position(previousCreatureButton.position().x, previousCreatureButton.position().y + 50);
     previousCreatureButton.center('horizontal');
+    previousCreatureButton.position(previousCreatureButton.position().x, previousCreatureButton.position().y + 50);
 
     if (optionsIndex == 1){
       for (let i = 0; i < 5; i++){
@@ -94,8 +108,9 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     timeScaleSlider.center('horizontal');
 
-    previousCreatureButton.center('horizontal');
     nextCreatureButton.center('horizontal');
+
+    previousCreatureButton.center('horizontal');
 
     engine.timing.timeScale = currentTimeScale;
 
@@ -121,7 +136,19 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     if (startingPos == null) {
       startingPos = proxyCreatureContainer[0].comparisonValue;
-      console.log("starting pos", startingPos)
+    }
+
+    //leaderboard stuff
+    for (let i = 0; i < creatureNum; i++){
+      if(optionsIndex != 2){
+        leaderboard[i].elt.firstChild.data = (padLeadingZeros(i + 1, 2) + ", Creature: " + padLeadingZeros((proxyCreatureContainer[i].proxyID + 1), 2) + ", At: "  + padLeadingZeros(parseInt(creatureContainer[proxyCreatureContainer[i].proxyID].averageX - startingPos), 4))
+      }
+      else{
+        leaderboard[i].elt.firstChild.data = (padLeadingZeros(i + 1, 2) + ", Creature: " + padLeadingZeros((proxyCreatureContainer[i].proxyID + 1), 2) + ", At: "  + padLeadingZeros(parseInt((proxyCreatureContainer[i].comparisonValue * -1) + 800), 4))
+      }
+      leaderboard[i].center('vertical')
+      leaderboard[i].center('horizontal')
+      leaderboard[i].position(leaderboard[i].position().x + 510, leaderboard[i].position().y - (390 - 20 * i))
     }
 
     const zoom = 0.6;
@@ -242,8 +269,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     let tempCreatureContainer = [];
     currentGen += 1;
 
-    console.log(creatureContainer[proxyCreatureContainer[0].proxyID])
-    console.log(creatureContainer[proxyCreatureContainer[1].proxyID])
     //do the brain from proxy list
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if(i == 0){
@@ -296,8 +321,13 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     }
   }
 
+  function padLeadingZeros(num, size) {
+    var s = num+"";
+    while (s.length < size) s = "0" + s;
+    return s;
+}
+
   this.mouseClicked = function(){
-    console.log(proxyCreatureContainer)
-    console.log(creatureContainer)
+    console.log(leaderboard)
   }
 }
