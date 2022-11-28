@@ -122,7 +122,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
   let McreatureRenderer = [];
 
   let averageX = 0;
-  let bestY;
+  let bestY = 9999999;
 
   this.averageX = averageX;
   this.bestY = bestY;
@@ -150,7 +150,6 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     this.brain.mutate(rate);
   }
 
-  
   this.think = function (timeScale = 1) { //moves all at once, uses
     let inputs = [];
 
@@ -233,14 +232,15 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     this.averageX = averageX;
 
     //calculate best y
-    let tempY = 0;
-    let bestY = 9999;
+    let tempY = 9999999;
     for (let i = 0; i < McreatureComposite.bodies.length; i++) {
-      tempY = McreatureComposite.bodies[i].position.y;
-
-      if (bestY > tempY){
-        bestY = McreatureComposite.bodies[i].position.y;
+      if (tempY > McreatureComposite.bodies[i].position.y){
+        tempY = McreatureComposite.bodies[i].position.y;
       }
+    }
+
+    if (tempY < bestY){
+      bestY = tempY;
     }
 
     this.bestY = bestY;

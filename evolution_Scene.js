@@ -17,10 +17,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   let creatureContainer = [];
   const creatureNum = 32;
-  let bestCreaturesFromLastGen = [];
-  let firstBestID = 0;
-  let secondBestID;
-  let timerStarted = false;
   let startingPos;
   let currentGen = 0;
 
@@ -34,7 +30,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
 
   let previousCreatureButton
-  let creatureSelectedID = 0;
+  let creatureSelectedPlace = 0;
 
   var world;
 
@@ -42,15 +38,11 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   var timeScaleSlider;
 
-  //newcode
   let proxyCreatureContainer = [];
 
   this.mySetup = function () {
     canvas = createCanvas(800, 800);
     engine = Engine.create();
-
-    //setInterval(function() { Engine.update(engine, 1000 / 60); }, 1000 / 60);
-    //engine.timing.timeScale = 0;
 
     world = engine.world;
     Matter.Runner.run(engine);
@@ -81,7 +73,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
         obstacleContainer.push(obstacle);
       }
     }
-    //console.log(ground);
 
     tf.setBackend("cpu"); //idk
 
@@ -104,7 +95,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     engine.timing.timeScale = currentTimeScale;
 
-    //new sort code - may break stuff
     if (optionsIndex != 2){
       for (let i = 0; i < creatureNum; i++) { 
         proxyCreatureContainer[i].comparisonValue = creatureContainer[proxyCreatureContainer[i].proxyID].averageX;
@@ -117,11 +107,17 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     }
 
     proxyCreatureContainer.sort((a, b) => {
-      return b.comparisonValue - a.comparisonValue;
+      if (optionsIndex != 2){
+        return b.comparisonValue - a.comparisonValue;
+      }
+      else{
+        return a.comparisonValue - b.comparisonValue;
+      }
     });
 
     if (startingPos == null) {
       startingPos = proxyCreatureContainer[0].comparisonValue;
+      console.log("starting pos", startingPos)
     }
 
     const zoom = 0.6;
@@ -161,8 +157,8 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     fill(225, 225, 225, 70)
     stroke(0, 0, 0, 70)
-    for (let i = 0; i < creatureContainer.length; i++) {
-      if(proxyCreatureContainer[0].proxyID != creatureContainer[i].McreatureID || creatureSelectedID != creatureContainer[i].McreatureID){
+    for (let i = 0; i < creatureContainer.length; i++) { //all but first and selected
+      if(proxyCreatureContainer[0].proxyID != creatureContainer[i].McreatureID || creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].McreatureID != creatureContainer[i].McreatureID){
         creatureContainer[i].show() //for each element in list render it
         creatureContainer[i].think(currentTimeScale); //nn things
       }
@@ -171,21 +167,24 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     stroke(0, 0, 0, 225)
 
     
-    fill(0, 0, 225, 225)
-    creatureContainer[creatureSelectedID].show()
-    creatureContainer[creatureSelectedID].think(currentTimeScale);
+    fill(0, 0, 225, 225) //selected
+    creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].show()
+    creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].think(currentTimeScale);
 
-    if(proxyCreatureContainer[0].proxyID != null && proxyCreatureContainer[0].proxyID != creatureSelectedID){
-      fill(0, 225, 0, 225) //best creature last, is drawn on top of everything else
+    if(proxyCreatureContainer[0].proxyID != null && proxyCreatureContainer[0].proxyID != creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].McreatureID){ //first
+      fill(0, 225, 0, 225) //best creature last, is drawn on top of everything else unless selected
       creatureContainer[proxyCreatureContainer[0].proxyID].show() //for each element in list render it
       creatureContainer[proxyCreatureContainer[0].proxyID].think(currentTimeScale); //nn things
     }
 
     if(optionsIndex == 2){
+      if(bestY > proxyCreatureContainer[0].comparisonValue){
+        bestY = proxyCreatureContainer[0].comparisonValue
+      }
       translate(-shiftX, 0)
       strokeWeight(5);
       stroke(0, 100, 0, 225)
-      line(-999, bestY, 5000, bestY)
+      line(-999, bestY, 5000, bestY)//(x1, y1, x2, y2)
       strokeWeight(1);
       stroke(0, 0, 0, 225)
     }
@@ -196,13 +195,15 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     text('Generation: ' + currentGen, 0, 42);
     if(optionsIndex != 2){
       text(("Current Best Average X, Creature: " + (proxyCreatureContainer[0].proxyID + 1) + " at " + parseInt((proxyCreatureContainer[0].comparisonValue - startingPos))), 0, 72)
-      text(("Viewing Creature " + (creatureSelectedID + 1) + ", Average X at: " + parseInt(creatureContainer[creatureSelectedID].averageX - startingPos)), 0, 102)
+      text(("Viewing Creature " + (creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].McreatureID + 1) + 
+            ", Average X at: " + parseInt(creatureContainer[creatureSelectedPlace].averageX - startingPos)) + " Placed at: " + (creatureSelectedPlace + 1), 0, 102)
     }
     else{
-      let num = (parseInt((proxyCreatureContainer[0].comparisonValue - startingPos)) * -1) - 999999150
+      let num = (parseInt((proxyCreatureContainer[0].comparisonValue)) * -1) + 800 //- 999999150 //+ 250
       text(("Current Best Peak Y, Creature: " + (proxyCreatureContainer[0].proxyID + 1) + " at " + num), 0, 72)
-      let num2 = (parseInt((creatureContainer[creatureSelectedID].bestY - startingPos)) * -1) - 999999150
-      text(("Viewing Creature " + (creatureSelectedID + 1) + ", Current Peak Y at: " + num2), 0, 102)
+      let num2 = (parseInt((creatureContainer[creatureSelectedPlace].bestY)) * -1) + 800 //- 999999150 //+ 250
+      text(("Viewing Creature " + (creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].McreatureID + 1) + 
+            ", Peak Y at: " + num2) + " Placed at: " + (creatureSelectedPlace + 1), 0, 102)
     }
 
     text(("Time: " + (timeCount).toFixed(1)), 0, 132)
@@ -212,8 +213,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     fill(255);
     
 
-    if (timeCount <= 0) {
-      //setTimeout(nextGen, time); //10000 = 10 secs
+    if (timeCount <= 0) {//10000 = 10 secs
       nextGen()
       startingPos = null;
 
@@ -226,23 +226,14 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       timerInterval = setInterval(setTime, (100 / currentTimeScale));
       timerStartedCount = true;
     }
-    //clearInterval(timerInterval);
-    //timerStartedCount = true
   }
 
   function setTime()
   {
     timeCount -= 0.1;
-    //console.log(timeCount)
     clearInterval(timerInterval);
     timerStartedCount = false;
   }
-
-  /*
-  this.myMouseClicked = function () {
-    console.log(creatureContainer)
-  }
-*/
 
   function nextGen() {
     let tempCreatureContainer = [];
@@ -265,8 +256,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       */
     }
 
-    //console.log(tempCreatureContainer)
-
     for (let i = 0; i < creatureNum; i++) {
       creatureContainer[i].creatureReset();
       creatureContainer[i].dispose();
@@ -278,12 +267,9 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       Composite.add(world, creatureContainer[i].McreatureComposite);
     }
 
-    //console.log(world)
     tempCreatureContainer = [];
-    bestCreaturesFromLastGen = [];
     bestY = 999999999;
     currentTimeScale = timeScaleSlider.value();
-    //timerStarted = false;
   }
 
   function mutateCreature(ID, index, rate) {
@@ -292,93 +278,26 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     return child;
   }
 
-  function findBestX() {
-    let bestX = 0;
-    let tempArray = [];
-    for (let i = 0; i < creatureContainer.length; i++) {
-      tempArray.push(creatureContainer[i].averageX);
-    }
-    //console.log(tempArray)
-
-    for (let i = 0; i < tempArray.length; i++) {
-      let temp = tempArray[i]
-      if (temp > bestX) {
-        bestX = temp;
-        firstBestID = i;
-      }
-    }
-    //console.log(firstBestID)
-    bestCreaturesFromLastGen.push(creatureContainer[firstBestID].brain)
-
-    tempArray.splice(firstBestID, 1, 0);
-    //console.log(tempArray)
-    bestX = 0;
-    for (let i = 0; i < tempArray.length; i++) {
-      let temp = tempArray[i]
-      //console.log(temp);
-      if (temp > bestX) {
-        bestX = temp;
-        secondBestID = i;
-      }
-    }
-    //console.log(secondBestID)
-    bestCreaturesFromLastGen.push(creatureContainer[secondBestID].brain)
-    //console.log(bestCreaturesFromLastGen);
-  }
-
-  function findBestY() {
-    let bestY = 0;
-    let tempArray = [];
-    for (let i = 0; i < creatureContainer.length; i++) {
-      tempArray.push(creatureContainer[i].averageX);
-    }
-    //console.log(tempArray)
-
-    for (let i = 0; i < tempArray.length; i++) {
-      let temp = tempArray[i]
-      if (temp > bestY) {
-        bestY = temp;
-        firstBestID = i;
-      }
-    }
-    //console.log(firstBestID)
-    bestCreaturesFromLastGen.push(creatureContainer[firstBestID].brain)
-
-    tempArray.splice(firstBestID, 1, 0);
-    //console.log(tempArray)
-    bestY = 0;
-    for (let i = 0; i < tempArray.length; i++) {
-      let temp = tempArray[i]
-      //console.log(temp);
-      if (temp > bestY) {
-        bestY = temp;
-        secondBestID = i;
-      }
-    }
-    //console.log(secondBestID)
-    bestCreaturesFromLastGen.push(creatureContainer[secondBestID].brain)
-    //console.log(bestCreaturesFromLastGen);
-  }
-
   function previousCreatureButtonDown() {
-    if (creatureSelectedID == 0){
-      creatureSelectedID = 31
+    if (creatureSelectedPlace == 0){
+      creatureSelectedPlace = 31
     }
     else{
-      creatureSelectedID--
+      creatureSelectedPlace--
     }
   }
 
   function nextCreatureButtonDown() {
-    if (creatureSelectedID == 31){
-      creatureSelectedID = 0
+    if (creatureSelectedPlace == 31){
+      creatureSelectedPlace = 0
     }
     else{
-      creatureSelectedID++
+      creatureSelectedPlace++
     }
   }
 
   this.mouseClicked = function(){
+    console.log(bestY)
     console.log(proxyCreatureContainer)
     console.log(creatureContainer)
   }
