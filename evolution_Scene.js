@@ -24,8 +24,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
   let timeCount = time / 1000;
   let timerStartedCount = false
 
-  let bestY = 999999999;
-
   let currentTimeScale = 1;
 
 
@@ -41,6 +39,12 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
   let proxyCreatureContainer = [];
 
   this.mySetup = function () {
+    let h5 = createElement('h5', '1st <br> 2nd <br> 3rd <br> 4th <br> 5th <br> 6th <br> 7th <br> 8th <br> 9th <br> 10th');
+    h5.style('color', '#000000');
+    h5.center('vertical')
+    h5.center('horizontal')
+    h5.position(h5.position().x + 460, h5.position().y - 350);
+
     canvas = createCanvas(800, 800);
     engine = Engine.create();
 
@@ -178,13 +182,12 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     }
 
     if(optionsIndex == 2){
-      if(bestY > proxyCreatureContainer[0].comparisonValue){
-        bestY = proxyCreatureContainer[0].comparisonValue
-      }
       translate(-shiftX, 0)
       strokeWeight(5);
       stroke(0, 100, 0, 225)
-      line(-999, bestY, 5000, bestY)//(x1, y1, x2, y2)
+      line(-999, creatureContainer[proxyCreatureContainer[0].proxyID].bestY, 5000, creatureContainer[proxyCreatureContainer[0].proxyID].bestY)//(x1, y1, x2, y2)
+      stroke(0, 0, 100, 225)
+      line(-999, creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].bestY, 5000, creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].bestY)//(x1, y1, x2, y2)
       strokeWeight(1);
       stroke(0, 0, 0, 225)
     }
@@ -196,14 +199,14 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     if(optionsIndex != 2){
       text(("Current Best Average X, Creature: " + (proxyCreatureContainer[0].proxyID + 1) + " at " + parseInt((proxyCreatureContainer[0].comparisonValue - startingPos))), 0, 72)
       text(("Viewing Creature " + (creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].McreatureID + 1) + 
-            ", Average X at: " + parseInt(creatureContainer[creatureSelectedPlace].averageX - startingPos)) + " Placed at: " + (creatureSelectedPlace + 1), 0, 102)
+            ", Average X at: " + parseInt(creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].averageX - startingPos)) + ", Placed at: " + (creatureSelectedPlace + 1), 0, 102)
     }
     else{
       let num = (parseInt((proxyCreatureContainer[0].comparisonValue)) * -1) + 800 //- 999999150 //+ 250
       text(("Current Best Peak Y, Creature: " + (proxyCreatureContainer[0].proxyID + 1) + " at " + num), 0, 72)
       let num2 = (parseInt((creatureContainer[creatureSelectedPlace].bestY)) * -1) + 800 //- 999999150 //+ 250
       text(("Viewing Creature " + (creatureContainer[proxyCreatureContainer[creatureSelectedPlace].proxyID].McreatureID + 1) + 
-            ", Peak Y at: " + num2) + " Placed at: " + (creatureSelectedPlace + 1), 0, 102)
+            ", Peak Y at: " + num2) + ", Placed at: " + (creatureSelectedPlace + 1), 0, 102)
     }
 
     text(("Time: " + (timeCount).toFixed(1)), 0, 132)
@@ -243,17 +246,15 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     console.log(creatureContainer[proxyCreatureContainer[1].proxyID])
     //do the brain from proxy list
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
-      if (i <= creatureNum / 2) { //half use 1st
+      if(i == 0){
+        tempCreatureContainer[i] = mutateCreature(proxyCreatureContainer[0].proxyID, i, 0); //same as best from last
+      }
+      else if (i <= creatureNum / 2) { //half use 1st
         tempCreatureContainer[i] = mutateCreature(proxyCreatureContainer[0].proxyID, i, 0.01 * i);
       }
       else{ //half use 2nd
         tempCreatureContainer[i] = mutateCreature(proxyCreatureContainer[1].proxyID, i, 0.01 * (i - 16));
       }
-      /*
-      else { // stops devolution, but the population as a whole is made worse
-        tempCreatureContainer[i] = new MyCreature(i, creatureCompositeIn, 2**i, bestCreaturesFromLastGen[0]);
-      }
-      */
     }
 
     for (let i = 0; i < creatureNum; i++) {
@@ -268,7 +269,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     }
 
     tempCreatureContainer = [];
-    bestY = 999999999;
     currentTimeScale = timeScaleSlider.value();
   }
 
@@ -297,7 +297,6 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
   }
 
   this.mouseClicked = function(){
-    console.log(bestY)
     console.log(proxyCreatureContainer)
     console.log(creatureContainer)
   }
