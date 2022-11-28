@@ -112,6 +112,11 @@ function placeOnGround(compositeIn){ //remeber, the y coords are 800 at the top 
   return compositeIn; //returned after being dropped to 0
 }
 
+function MyCreatureProxy(proxyID, comparisonValue = 0) {
+  this.proxyID = proxyID
+  this.comparisonValue = comparisonValue
+}
+
 function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { //this acts as one big class constructor, but with a lot less "this."
   let McreatureComposite = new Composite.create();
   let McreatureRenderer = [];
@@ -133,13 +138,8 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     this.brain = new NeuralNetwork(compositeIn.constraints.length, (compositeIn.constraints.length * 5), (compositeIn.constraints.length)); //changed to have same output length as constraints amount
   }
 
-  this.copy = function (newBrain) { //needs work to work :)
-    //this.brain.dispose()
-    //this.brain = newBrain;
-    //console.log(this.brain);
+  this.copy = function (newBrain) { //needs work to work :) //hello this is nate 2 months later and this comment confuses me
     this.brain = newBrain;
-    //console.log(this.brain);
-    //this.brain = brain.copy();
   }
 
   this.dispose = function () { //memory cleanup
@@ -174,7 +174,7 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
       }
     }
 
-    //enfrorce a max length of constraints
+    //enfrorce a max length of constraints, causes physics problems
     /*
     for(let i = 0; i < McreatureComposite.constraints.length; i++) {
       if(McreatureComposite.constraints[i].length > compositeIn.constraints[i].length + 200){
@@ -183,41 +183,6 @@ function MyCreature(McreatureID, compositeIn, McreatureColisionLayer, brain) { /
     }   
     */
   }
-
-  /*
-  this.think = function () {
-    let inputs = [];
-
-    for (let i = 0; i < McreatureComposite.constraints.length; i++) {
-      let minVal = 35;
-      if (compositeIn.constraints[i].length - 200 > 35) {
-        minVal = compositeIn.constraints[i].length - 200;
-      }
-      //change below to https://stackoverflow.com/questions/51593409/how-to-get-range-from-0-1-based-on-two-number-range
-      inputs[i] = normaliseInput(McreatureComposite.constraints[i].length, compositeIn.constraints[i].length + 200, minVal);
-    }
-
-    let outputs = this.brain.predict(inputs);
-
-    // 0 - increase constraint [0] 1 - decrease constraint [0] 2 - increase constraint [1] 3 - decrease constraint [1]
-    const maxVal = outputs.indexOf(Math.max(...outputs));
-
-    if (maxVal % 2 == 0) {//even
-      if (McreatureComposite.constraints[maxVal / 2].length <= compositeIn.constraints[maxVal / 2].length + 200) {
-        McreatureComposite.constraints[maxVal / 2].length += 5;
-      }
-      //increaseConstraint((maxVal / 2)); //need to make this function
-    }
-    else {//odd
-      if (McreatureComposite.constraints[(maxVal - 1) / 2].length > 35 &&
-        McreatureComposite.constraints[(maxVal - 1) / 2].length >= compositeIn.constraints[(maxVal - 1) / 2].length - 200) {
-        McreatureComposite.constraints[(maxVal - 1) / 2].length -= 5;
-      }
-      //decreaseConstraint(((maxVal - 1) / 2));//and this, oe merge the imaginary functions
-      
-    }
-  }
-  */
 
   this.creatureSetup = function () {
     Composite.add(world, McreatureComposite);

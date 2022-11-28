@@ -42,6 +42,9 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   var timeScaleSlider;
 
+  //newcode
+  let proxyCreatureContainer = [];
+
   this.mySetup = function () {
     canvas = createCanvas(800, 800);
     engine = Engine.create();
@@ -86,6 +89,8 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
       creatureContainer.push(new MyCreature(i, creatureCompositeIn, 2 ** i))
       creatureContainer[i].creatureSetup();
       Composite.add(world, creatureContainer[i].McreatureComposite);
+
+      proxyCreatureContainer.push(new MyCreatureProxy(i))//index is the same as the ID
     }
   }
 
@@ -99,39 +104,29 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
     engine.timing.timeScale = currentTimeScale;
 
-    let bestX = 0;
-
+    //new sort code - may break stuff
     if (optionsIndex != 2){
-      for (let i = 0; i < creatureContainer.length; i++) {
-        let temp = creatureContainer[i].averageX
-        if (temp > bestX) {
-          bestX = temp;
-          firstBestID = creatureContainer[i].McreatureID;
-          //console.log("new 1st place, ", firstBestID, " at ", bestX)
-        }
+      for (let i = 0; i < creatureNum; i++) { 
+        proxyCreatureContainer[i].comparisonValue = creatureContainer[proxyCreatureContainer[i].proxyID].averageX;
       }
     }
     else{
-      for (let i = 0; i < creatureContainer.length; i++) {
-        let tempY = creatureContainer[i].bestY;
-        if (tempY < bestY) {
-          bestY = tempY;
-          firstBestID = creatureContainer[i].McreatureID;
-        }
-        bestX = creatureContainer[firstBestID].averageX;
+      for (let i = 0; i < creatureNum; i++) { 
+        proxyCreatureContainer[i].comparisonValue = creatureContainer[proxyCreatureContainer[i].proxyID].bestY;
       }
     }
 
-    if (startingPos == null && optionsIndex != 2) {
-      startingPos = bestX;
-    }
-    else if (startingPos == null){
-      startingPos = bestY
+    proxyCreatureContainer.sort((a, b) => {
+      return b.comparisonValue - a.comparisonValue;
+    });
+
+    if (startingPos == null) {
+      startingPos = proxyCreatureContainer[0].comparisonValue;
     }
 
     const zoom = 0.6;
-    const shiftX = -bestX * zoom + width / 2; //replace with leading creature
-    const shiftY = -bestY * zoom + width / 2;
+    const shiftX = -creatureContainer[proxyCreatureContainer[0].proxyID].averageX * zoom + width / 2; //replace with leading creature
+    const shiftY = -proxyCreatureContainer[0].comparisonValue * zoom + width / 2;
 
     push()
     if(optionsIndex != 2){
@@ -167,7 +162,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     fill(225, 225, 225, 70)
     stroke(0, 0, 0, 70)
     for (let i = 0; i < creatureContainer.length; i++) {
-      if(firstBestID != creatureContainer[i].McreatureID || creatureSelectedID != creatureContainer[i].McreatureID){
+      if(proxyCreatureContainer[0].proxyID != creatureContainer[i].McreatureID || creatureSelectedID != creatureContainer[i].McreatureID){
         creatureContainer[i].show() //for each element in list render it
         creatureContainer[i].think(currentTimeScale); //nn things
       }
@@ -180,10 +175,10 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     creatureContainer[creatureSelectedID].show()
     creatureContainer[creatureSelectedID].think(currentTimeScale);
 
-    if(firstBestID != null && firstBestID != creatureSelectedID){
+    if(proxyCreatureContainer[0].proxyID != null && proxyCreatureContainer[0].proxyID != creatureSelectedID){
       fill(0, 225, 0, 225) //best creature last, is drawn on top of everything else
-      creatureContainer[firstBestID].show() //for each element in list render it
-      creatureContainer[firstBestID].think(currentTimeScale); //nn things
+      creatureContainer[proxyCreatureContainer[0].proxyID].show() //for each element in list render it
+      creatureContainer[proxyCreatureContainer[0].proxyID].think(currentTimeScale); //nn things
     }
 
     if(optionsIndex == 2){
@@ -200,12 +195,12 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     textSize(32);
     text('Generation: ' + currentGen, 0, 42);
     if(optionsIndex != 2){
-      text(("Current Best Average X, Creature: " + (firstBestID + 1) + " at " + parseInt((bestX - startingPos))), 0, 72)
-      text(("Viewing Creature " + (creatureSelectedID + 1) + ", Average X at: " + parseInt(creatureContainer[creatureSelectedID].averageX)), 0, 102)
+      text(("Current Best Average X, Creature: " + (proxyCreatureContainer[0].proxyID + 1) + " at " + parseInt((proxyCreatureContainer[0].comparisonValue - startingPos))), 0, 72)
+      text(("Viewing Creature " + (creatureSelectedID + 1) + ", Average X at: " + parseInt(creatureContainer[creatureSelectedID].averageX - startingPos)), 0, 102)
     }
     else{
-      let num = (parseInt((bestY - startingPos)) * -1) - 999999150
-      text(("Current Best Peak Y, Creature: " + (firstBestID + 1) + " at " + num), 0, 72)
+      let num = (parseInt((proxyCreatureContainer[0].comparisonValue - startingPos)) * -1) - 999999150
+      text(("Current Best Peak Y, Creature: " + (proxyCreatureContainer[0].proxyID + 1) + " at " + num), 0, 72)
       let num2 = (parseInt((creatureContainer[creatureSelectedID].bestY - startingPos)) * -1) - 999999150
       text(("Viewing Creature " + (creatureSelectedID + 1) + ", Current Peak Y at: " + num2), 0, 102)
     }
@@ -251,26 +246,17 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   function nextGen() {
     let tempCreatureContainer = [];
-
-    //console.log('next generation');
     currentGen += 1;
 
-    //find first, second and third best
-    findBestX();
-
-    if(optionsIndex != 2){
-      findBestX();
-    }
-    else{
-      findBestY();
-    }
-
+    console.log(creatureContainer[proxyCreatureContainer[0].proxyID])
+    console.log(creatureContainer[proxyCreatureContainer[1].proxyID])
+    //do the brain from proxy list
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if (i <= creatureNum / 2) { //half use 1st
-        tempCreatureContainer[i] = mutateCreature(0, i, 0.01 * i);
+        tempCreatureContainer[i] = mutateCreature(proxyCreatureContainer[0].proxyID, i, 0.01 * i);
       }
       else{ //half use 2nd
-        tempCreatureContainer[i] = mutateCreature(1, i, 0.01 * (i - 16));
+        tempCreatureContainer[i] = mutateCreature(proxyCreatureContainer[1].proxyID, i, 0.01 * (i - 16));
       }
       /*
       else { // stops devolution, but the population as a whole is made worse
@@ -301,13 +287,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
   }
 
   function mutateCreature(ID, index, rate) {
-    /*
-    //console.log(bestCreaturesFromLastGen, "before")
-    creatureContainer[index].copy(bestCreaturesFromLastGen[ID]);
-    //console.log(bestCreaturesFromLastGen, "after")
-    creatureContainer[index].mutate();
-    */
-    let child = new MyCreature(index, creatureCompositeIn, 2**index, bestCreaturesFromLastGen[ID]);
+    let child = new MyCreature(index, creatureCompositeIn, 2**index, creatureContainer[ID].brain);
     child.mutate(rate);
     return child;
   }
@@ -396,5 +376,10 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     else{
       creatureSelectedID++
     }
+  }
+
+  this.mouseClicked = function(){
+    console.log(proxyCreatureContainer)
+    console.log(creatureContainer)
   }
 }
