@@ -38,18 +38,9 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
 
   let proxyCreatureContainer = [];
 
-  let h5;
-
   let leaderboard = [];
 
   this.mySetup = function () {
-    /*
-    h5 = createElement('h5', '1st <br> 2nd <br> 3rd <br> 4th <br> 5th <br> 6th <br> 7th <br> 8th <br> 9th <br> 10th');
-    h5.style('color', '#000000');
-    h5.center('vertical')
-    h5.center('horizontal')
-    h5.position(h5.position().x + 460, h5.position().y - 350);
-    */
     for (let i = 0; i < creatureNum; i++){
       leaderboard.push(createElement('h5', (i + 1) + "aaaaaaaaaaaaaa"))
       leaderboard[i].style('color', '#000000');
@@ -272,7 +263,7 @@ function evolution_Scene(creatureCompositeIn, genLength, optionsIndex) {
     //do the brain from proxy list
     for (let i = 0; i < creatureNum; i++) { //half are from num 1
       if(i == 0){
-        tempCreatureContainer[i] = mutateCreature(proxyCreatureContainer[0].proxyID, i, 0); //same as best from last
+        tempCreatureContainer[i] = new MyCreature(i, creatureCompositeIn, 2**i, creatureContainer[proxyCreatureContainer[0].proxyID].brain); //same as best from last
       }
       else if (i <= creatureNum / 2) { //half use 1st
         tempCreatureContainer[i] = mutateCreature(proxyCreatureContainer[0].proxyID, i, 0.01 * i);
