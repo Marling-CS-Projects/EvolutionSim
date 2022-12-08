@@ -6,6 +6,8 @@ function creature_Creator() {
     let muscleButton;
     let restartButton;
     let doneButton;
+    let warnText;
+    let sel;
 
     let genTimeSlider;
 
@@ -21,6 +23,10 @@ function creature_Creator() {
 
     this.mySetup = function () {
         creatureComposite = new Composite.create();
+
+        warnText = createElement('h5', " ")
+        warnText.center('vertical')
+        warnText.center('horizontal')
 
         var canvas = createCanvas(800, 800);
         var engine = Engine.create();
@@ -70,6 +76,9 @@ function creature_Creator() {
 
     this.myDraw = function () {
         background(51);
+
+        warnText.center('vertical')
+        warnText.center('horizontal')
 
         jointButton.center('horizontal');
 
@@ -124,17 +133,20 @@ function creature_Creator() {
     }
 
     function jointButtonDown() {
+        warnText.elt.firstChild.data = " "
         switchCaseX = 0;
         temp = null;
         //console.log("joint button pressed");
     }
 
     function muscleButtonDown() {
+        warnText.elt.firstChild.data = " "
         switchCaseX = 1;
         //console.log("muscle button pressed");
     }
 
     function restartButtonDown() {
+        warnText.elt.firstChild.data = " "
         temp = null;
         //console.log(world);
         //console.log(creatureComposite);
@@ -149,7 +161,11 @@ function creature_Creator() {
 
     function doneButtonDown() {
         if (creatureComposite.bodies.length <= 3 || creatureComposite.constraints.length <= 3) {
-            console.log("not enough joints / muscles")
+            //console.log("not enough joints / muscles")
+            warnText.elt.firstChild.data = "Please add more joints / muscles"
+            warnText.style('color', '#fc0303');
+            warnText.center('vertical')
+            warnText.center('horizontal')
             return; //TODO - uncomment this post testing
         }
         jointButton.remove();
@@ -167,6 +183,7 @@ function creature_Creator() {
 
     this.myMouseClicked = function () {
         if (mouseInCanvas(mouseX, mouseY, 800, 800)) {
+            warnText.elt.firstChild.data = " "
             switch (switchCaseX) {
                 case 0:
                     creatureRender.push(new MyCircle(mouseX, mouseY, 15, { isStatic: true }, creatureComposite));
